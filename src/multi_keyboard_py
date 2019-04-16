@@ -2,11 +2,10 @@
 import rospy
 
 from geometry_msgs.msg import Twist
-
-import sys, select, termios, tty
-
+from pynput import mouse
+from pynput import keyboard
 msg = """
-Control Your multiple Turtlebot!
+Control Your multiple Turtlebots!
 ---------------------------
 Moving around:
    w
@@ -23,29 +22,38 @@ CTRL-C to quit
 """
 
 
-def getKey():
-    tty.setraw(sys.stdin.fileno())
-    rlist, _, _ = select.select([sys.stdin], [], [], 0.1)
-    if rlist:
-        key = sys.stdin.read(1)
-    else:
-        key = ''
+def on_press(key):
+    try:
+        print('alphanumeric key {0} pressed'.format(
+            key.char))
+            
+    except AttributeError:
+        print('special key {0} pressed'.format(
+            key))
 
-    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
-    return key
+def on_release(key):
+    print('{0} released'.format(
+        key))
+    if key == keyboard.Key.esc:
+        # Stop listener
+        return False
 
 if __name__=="__main__":
 
-   settings = termios.tcgetattr(sys.stdin)
     
-   rospy.init_node('MultiRobot_teleop')
-   pub = rospy.Publisher('~cmd_vel', Twist)
-   rate = rospy.Rate(10)
-   while not rospy.is_shutdown():
-      twist = Twist()
-      twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
-      twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
-      pub.publish(twist)
+  rospy.init_node('multiKey')
+  pub = rospy.Publisher('~cmd_vel', Twist, queue_size = 10)
+   
+  rate = rospy.Rate(10)
+  while not rospy.is_shutdown():
+      with keyboard.Listener(
+          on_press = on_press,
+          on_release = on_release) as listener:
+          listener.join()
+      
+      rate.sleep()
+      
 
-   termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+  
+
 
