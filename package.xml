@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>multi_robot</name>
+  <name>multiple_robot</name>
   <version>0.0.0</version>
-  <description>The multi_robot package</description>
+  <description>The multiple_robot package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
