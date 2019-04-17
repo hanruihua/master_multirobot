@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import rospy
+from std_msgs.msg import String
 
 from geometry_msgs.msg import Twist
 from pynput import mouse
 from pynput import keyboard
+from multiple_robot.msg import VelocityID
 msg = """
 Control Your multiple Turtlebots!
 ---------------------------
@@ -21,37 +23,106 @@ anything else : stop smoothly
 CTRL-C to quit
 """
 
+ID_Robot = ('0', )
 
 def on_press(key):
     try:
+        global target_speed, target_turn, ranges, ctrlFlag
+        if key.char == 'w':
+            target_speed = 1 * ranges
+        if key.char == 's':
+            target_speed = -1 * ranges
+        if key.char == 'd':
+            target_turn = 1 * ranges
+        if key.char == 'a':
+            target_turn = -1 * ranges
+        
+            #print('current speed {0}'.format(control_speed))
         print('alphanumeric key {0} pressed'.format(
             key.char))
             
     except AttributeError:
-        print('special key {0} pressed'.format(
-            key))
+        if key == keyboard.Key.ctrl:
+            ctrlFlag = 1
 
 def on_release(key):
-    print('{0} released'.format(
-        key))
+    #print('{0} released'.format(
+        #key))
+    global target_speed, target_turn, ranges, ctrlFlag
+    if key.char == 'e' and ranges < 4:
+            ranges = ranges + 0.5
+            print('Current ranges is {0}'.format(ranges))
+    if key.char == 'q' and ranges > 1:
+            ranges = ranges - 0.5
+            print('Current ranges is {0}'.format(ranges))
+    if key.char == 'w' or key.char == 's' :
+            target_speed = 0
+    if key.char == 'a' or key.char == 'd':
+            target_turn = 0
+    if key == keyboard.Key.ctrl:
+            ctrlFlag = 0
     if key == keyboard.Key.esc:
         # Stop listener
         return False
+'''
+def on_move(x, y):
+    print('Pointer moved to {0}'.format(
+        (x, y)))
 
-if __name__=="__main__":
+def on_click(x, y, button, pressed):
+    print('{0} at {1}'.format(
+        'Pressed' if pressed else 'Released',
+        (x, y)))
+    #if not pressed:
+        # Stop listener
+        #return False
 
+def on_scroll(x, y, dx, dy):
+    print('Scrolled {0} at {1}'.format(
+        'down' if dy < 0 else 'up',
+        (x, y)))
+'''
+def trans(target, control, acc_for, acc_back):
+    if target > control:
+        control = min(target, control + acc_for)
+    elif target < control:
+        control = max(target, control - acc_back)
+    else:
+        control = target
+    return control
+
+
+if __name__=="__main__":    
+    rospy.init_node('multiKey')
+    pub = rospy.Publisher('~cmd_vel', VelocityID, queue_size = 10)
     
-  rospy.init_node('multiKey')
-  pub = rospy.Publisher('~cmd_vel', Twist, queue_size = 10)
-   
-  rate = rospy.Rate(10)
-  while not rospy.is_shutdown():
-      with keyboard.Listener(
-          on_press = on_press,
-          on_release = on_release) as listener:
-          listener.join()
-      print(1)
-      rate.sleep()
+    ctrlFlag = 0
+    mode = '0' # control model 1~9 robot
+    control_speed = 0
+    control_turn = 0
+
+    ranges = 1
+
+    target_speed = 0
+    target_turn = 0
+
+    acc_for = 0.2 
+    acc_back = 0.4
+    
+    listener_key = keyboard.Listener(on_press=on_press, on_release=on_release)
+    listener_key.start() 
+    #listener_mouse = mouse.Listener(on_move=on_move, on_click=on_click, on_scroll=on_scroll)
+    #listener_mouse.start()
+    vel = VelocityID()
+    rate = rospy.Rate(10)
+    while not rospy.is_shutdown():
+        control_speed = trans(target_speed, control_speed, acc_for, acc_back)
+        control_turn = trans(target_turn, control_turn, acc_for, acc_back)
+        vel.id = '1'
+        vel.linear.x = control_speed
+        vel.angular.z = control_turn
+        #print(vel)
+        rate.sleep()
       
 
   
