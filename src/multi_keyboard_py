@@ -10,60 +10,54 @@ msg = """
 Control Your multiple Turtlebots!
 ---------------------------
 Moving around:
-   w
-   a
-   s
-   d
-q/z : increase/decrease max speeds by 10%
-w/x : increase/decrease only linear speed by 10%
-e/c : increase/decrease only angular speed by 10%
-space key, k : force stop
-anything else : stop smoothly
+   w  move forward
+   s  move backward
+   a  turn left
+   d  turn right
+Current model:  0 
 
-CTRL-C to quit
+q/z : increase/decrease max speeds by 0.5
+alt+num: change the mode to control different robot
+ctrl-C to quit
 """
 
-ID_Robot = ('0', )
+ID_Robot = ('1', '2','3','4','5','6','7','8','9')
 
 def on_press(key):
     try:
-        global target_speed, target_turn, ranges, ctrlFlag
-        if key.char == 'w':
+        global target_speed, target_turn, ranges, altflag, mode
+        press = key.char
+        if press == 'w':
             target_speed = 1 * ranges
-        if key.char == 's':
+        if press == 's':
             target_speed = -1 * ranges
-        if key.char == 'd':
+        if press == 'd':
             target_turn = 1 * ranges
-        if key.char == 'a':
+        if press == 'a':
             target_turn = -1 * ranges
-        
-            #print('current speed {0}'.format(control_speed))
-        print('alphanumeric key {0} pressed'.format(
-            key.char))
-            
+        if altflag == 1 and press in ID_Robot:
+            mode = str(press)
     except AttributeError:
-        if key == keyboard.Key.ctrl:
-            ctrlFlag = 1
-
+        if key == keyboard.Key.alt:
+            altflag = 1
+            #print(1)
+            
 def on_release(key):
-    #print('{0} released'.format(
-        #key))
-    global target_speed, target_turn, ranges, ctrlFlag
-    if key.char == 'e' and ranges < 4:
-            ranges = ranges + 0.5
-            print('Current ranges is {0}'.format(ranges))
-    if key.char == 'q' and ranges > 1:
-            ranges = ranges - 0.5
-            print('Current ranges is {0}'.format(ranges))
-    if key.char == 'w' or key.char == 's' :
-            target_speed = 0
-    if key.char == 'a' or key.char == 'd':
-            target_turn = 0
-    if key == keyboard.Key.ctrl:
-            ctrlFlag = 0
-    if key == keyboard.Key.esc:
-        # Stop listener
-        return False
+        global target_speed, target_turn, ranges, altflag
+        if key not in keyboard.Key:
+                press = key.char
+                if press == 'e' and ranges < 4:
+                        ranges = ranges + 0.5
+                        print('increase speed by {0}'.format(ranges))
+                if press == 'q' and ranges > 1:
+                        ranges = ranges - 0.5 
+                        print('devrease speed by {0}'.format(ranges))        
+                if press == 'w' or press == 's':
+                        target_speed = 0
+                if press == 'a' or press == 'd':
+                        target_turn = 0
+        if key == keyboard.Key.alt:
+           altflag = 0
 '''
 def on_move(x, y):
     print('Pointer moved to {0}'.format(
@@ -96,7 +90,7 @@ if __name__=="__main__":
     rospy.init_node('multiKey')
     pub = rospy.Publisher('~cmd_vel', VelocityID, queue_size = 10)
     
-    ctrlFlag = 0
+    altflag = 0
     mode = '0' # control model 1~9 robot
     control_speed = 0
     control_turn = 0
@@ -115,10 +109,11 @@ if __name__=="__main__":
     #listener_mouse.start()
     vel = VelocityID()
     rate = rospy.Rate(10)
+    print(msg)
     while not rospy.is_shutdown():
         control_speed = trans(target_speed, control_speed, acc_for, acc_back)
         control_turn = trans(target_turn, control_turn, acc_for, acc_back)
-        vel.id = '1'
+        vel.id = mode
         vel.linear.x = control_speed
         vel.angular.z = control_turn
         #print(vel)
