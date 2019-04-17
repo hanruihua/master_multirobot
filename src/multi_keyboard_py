@@ -2,10 +2,10 @@
 import rospy
 from std_msgs.msg import String
 
-from geometry_msgs.msg import Twist
 from pynput import mouse
 from pynput import keyboard
 from multiple_robot.msg import VelocityID
+
 msg = """
 Control Your multiple Turtlebots!
 ---------------------------
@@ -116,6 +116,7 @@ if __name__=="__main__":
         vel.id = mode
         vel.linear.x = control_speed
         vel.angular.z = control_turn
+        pub.publish(vel)
         #print(vel)
         rate.sleep()
       
