@@ -50,7 +50,7 @@ if __name__=="__main__":
           on_press = on_press,
           on_release = on_release) as listener:
           listener.join()
-      
+      print(1)
       rate.sleep()
       
 
