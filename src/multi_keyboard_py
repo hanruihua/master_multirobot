@@ -2,10 +2,10 @@
 import rospy
 from std_msgs.msg import String
 
+from geometry_msgs.msg import Twist
 from pynput import mouse
 from pynput import keyboard
 from multiple_robot.msg import VelocityID
-
 msg = """
 Control Your multiple Turtlebots!
 ---------------------------
@@ -21,7 +21,7 @@ alt+num: change the mode to control different robot
 ctrl-C to quit
 """
 
-ID_Robot = ('1', '2','3','4','5','6','7','8','9')
+ID_Robot = ('0', '1', '2','3','4','5','6','7','8','9')
 
 def on_press(key):
     try:
