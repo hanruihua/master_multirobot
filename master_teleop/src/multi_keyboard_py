@@ -5,7 +5,7 @@ from std_msgs.msg import String
 from geometry_msgs.msg import Twist
 from pynput import mouse
 from pynput import keyboard
-from multiple_robot.msg import VelocityID
+from master_teleop.msg import VelocityID
 msg = """
 Control Your multiple Turtlebots!
 ---------------------------
