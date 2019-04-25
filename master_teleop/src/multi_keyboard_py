@@ -32,9 +32,9 @@ def on_press(key):
         if press == 's':
             target_speed = -1 * ranges
         if press == 'd':
-            target_turn = 1 * ranges
-        if press == 'a':
             target_turn = -1 * ranges
+        if press == 'a':
+            target_turn = 1 * ranges
         if altflag == 1 and press in ID_Robot:
             mode = str(press)
     except AttributeError:
@@ -112,7 +112,8 @@ if __name__=="__main__":
     print(msg)
     while not rospy.is_shutdown():
         control_speed = trans(target_speed, control_speed, acc_for, acc_back)
-        control_turn = trans(target_turn, control_turn, acc_for, acc_back)
+        #control_turn = trans(target_turn, control_turn, acc_for, acc_back)
+        control_turn = target_turn;
         vel.id = mode
         vel.linear.x = control_speed
         vel.angular.z = control_turn
