@@ -46,11 +46,11 @@ def on_release(key):
         global target_speed, target_turn, ranges, altflag
         if key not in keyboard.Key:
                 press = key.char
-                if press == 'e' and ranges < 4:
-                        ranges = ranges + 0.5
+                if press == 'e' and ranges < 1:
+                        ranges = ranges + 0.1
                         print('increase speed by {0}'.format(ranges))
-                if press == 'q' and ranges > 1:
-                        ranges = ranges - 0.5 
+                if press == 'q' and ranges > 0.1:
+                        ranges = ranges - 0.1
                         print('devrease speed by {0}'.format(ranges))        
                 if press == 'w' or press == 's':
                         target_speed = 0
@@ -95,13 +95,13 @@ if __name__=="__main__":
     control_speed = 0
     control_turn = 0
 
-    ranges = 1
+    ranges = 0.1
 
     target_speed = 0
     target_turn = 0
 
-    acc_for = 0.2 
-    acc_back = 0.4
+    acc_for = 0.05 
+    acc_back = 0.05
     
     listener_key = keyboard.Listener(on_press=on_press, on_release=on_release)
     listener_key.start() 
