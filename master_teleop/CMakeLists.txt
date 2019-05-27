@@ -191,8 +191,8 @@ include_directories(
 ## Testing ##
 #############
  
-add_executable(main src/main.cpp)
-target_link_libraries(main ${catkin_LIBRARIES})
+#add_executable(main src/main.cpp)
+#target_link_libraries(main ${catkin_LIBRARIES})
 
 ## Add gtest based cpp test target and link libraries
 # catkin_add_gtest(${PROJECT_NAME}-test test/test_multi_robot.cpp)
