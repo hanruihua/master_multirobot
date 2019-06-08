@@ -38,6 +38,7 @@ def on_press(key):
         if altflag == 1 and press in ID_Robot:
             mode = str(press)
     except AttributeError:
+
         if key == keyboard.Key.alt:
             altflag = 1
             #print(1)
@@ -108,7 +109,7 @@ if __name__=="__main__":
     #listener_mouse = mouse.Listener(on_move=on_move, on_click=on_click, on_scroll=on_scroll)
     #listener_mouse.start()
     vel = VelocityID()
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(40)
     print(msg)
     while not rospy.is_shutdown():
         control_speed = trans(target_speed, control_speed, acc_for, acc_back)
