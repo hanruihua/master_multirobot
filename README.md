@@ -14,8 +14,8 @@ Please run the [Master program](https://github.com/hanruihua/slave_multirobot) i
 
 > sudo pip install pynput
 
-#### Run 
-*Attention*: All the slave robots and master should connect to the same ros master. 
+## Run 
+**Attention**: All the slave robots and master should connect to the same ros master. 
 
 Control the multiple slave robots
 > rosrun master_teleop multi_keyboard_py 
