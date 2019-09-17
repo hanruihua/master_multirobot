@@ -14,9 +14,10 @@ Moving around:
    s  move backward
    a  turn left
    d  turn right
-Current model:  0 
+Init model:  0 
 
-q/z : increase/decrease max speeds by 0.5
+e/q : increase/decrease max speeds by 0.1
+c/z : increase/decrease max angular speeds by 0.1
 alt+num: change the mode to control different robot
 ctrl-C to quit
 """
@@ -25,18 +26,19 @@ ID_Robot = ('0', '1', '2','3','4','5','6','7','8','9')
 
 def on_press(key):
     try:
-        global target_speed, target_turn, ranges, altflag, mode
+        global target_speed, target_turn, ranges, altflag, mode, angular
         press = key.char
         if press == 'w':
             target_speed = 1 * ranges
         if press == 's':
             target_speed = -1 * ranges
         if press == 'd':
-            target_turn = -1 * ranges
+            target_turn = -1 * angular
         if press == 'a':
-            target_turn = 1 * ranges
+            target_turn = 1 * angular
         if altflag == 1 and press in ID_Robot:
             mode = str(press)
+	    print('Current model is {0}'.format(mode))
     except AttributeError:
 
         if key == keyboard.Key.alt:
@@ -44,15 +46,21 @@ def on_press(key):
             #print(1)
             
 def on_release(key):
-        global target_speed, target_turn, ranges, altflag
+        global target_speed, target_turn, ranges, altflag, angular
         if key not in keyboard.Key:
                 press = key.char
                 if press == 'e' and ranges < 1:
                         ranges = ranges + 0.1
-                        print('increase speed by {0}'.format(ranges))
+                        print('increase speed to {0}'.format(ranges))
                 if press == 'q' and ranges > 0.1:
                         ranges = ranges - 0.1
-                        print('devrease speed by {0}'.format(ranges))        
+                        print('decrease speed to {0}'.format(ranges))
+		if press == 'c' and angular < 1:
+                        angular = angular + 0.1
+                        print('increase angular speed to {0}'.format(angular))
+                if press == 'z' and angular > 0.1:
+                        angular = angular - 0.1  
+                        print('decrease angular speed to {0}'.format(angular))      
                 if press == 'w' or press == 's':
                         target_speed = 0
                 if press == 'a' or press == 'd':
@@ -96,7 +104,8 @@ if __name__=="__main__":
     control_speed = 0
     control_turn = 0
 
-    ranges = 0.1
+    ranges = 0.2
+    angular = 0.6
 
     target_speed = 0
     target_turn = 0
