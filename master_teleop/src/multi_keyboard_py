@@ -110,8 +110,8 @@ if __name__=="__main__":
     target_speed = 0
     target_turn = 0
 
-    acc_for = 0.05 
-    acc_back = 0.05
+    acc_for = 0.02 
+    acc_back = 0.02
     
     listener_key = keyboard.Listener(on_press=on_press, on_release=on_release)
     listener_key.start() 
