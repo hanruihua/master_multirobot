@@ -1,7 +1,7 @@
 # Multiple Robots Master
 The program of multiple robot running in master computer
 
-Please run the [Master program](https://github.com/hanruihua/slave_multirobot) in slave robot
+Please run the [Slave program](https://github.com/hanruihua/slave_multirobot) in slave robot
  
 ## Environment and device
 
