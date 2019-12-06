@@ -104,8 +104,8 @@ if __name__=="__main__":
     control_speed = 0
     control_turn = 0
 
-    ranges = 0.2
-    angular = 0.6
+    ranges = 0.4
+    angular = 0.9
 
     target_speed = 0
     target_turn = 0
