@@ -1,0 +1,4 @@
+string product_name
+string hardware_version
+string firmware_version
+int32 baudrate

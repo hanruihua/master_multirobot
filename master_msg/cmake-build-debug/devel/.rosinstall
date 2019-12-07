@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/ubuntu/catkin_ws/src/master_multirobot/master_msg/cmake-build-debug/devel/setup.sh
