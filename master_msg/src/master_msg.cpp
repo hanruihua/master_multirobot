@@ -1,13 +1,10 @@
 //
 // Created by Carlos on 19-6-13.
 //
-#include <sstream>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include <ros/ros.h>
+#include <iostream>
 #include "std_msgs/String.h"
-#include <string>  
-#include <iostream> 
+#include <msg_utils.h>
 #include <gazebo_msgs/ModelStates.h>
 #include "master_msg/node_frame2.h"
 #include <geometry_msgs/Point.h>
@@ -16,10 +13,8 @@
 #include <geometry_msgs/Vector3.h>
 #include "geometry_msgs/Twist.h"
 
-std::ostringstream stream;
-std::stringstream intStream;
 int agent_number = 10;
-
+std::vector<int> flags;
 geometry_msgs::Pose void_pose;
 geometry_msgs::Twist void_twist;
 
@@ -30,38 +25,41 @@ std::string agent_name;
 
 gazebo_msgs::ModelStates agent_states;
 ros::Publisher chatter_pub;
+msg_utils::msg_utils transfer_tool;
 
 void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
-    stream.clear();  
-    stream.str("");
     printf("now in callback");
+    int update = 0;
     if(msgInput->role == 2){
-        stream << msgInput->id;
-        agent_name = stream.str();
-
+        agent_name = transfer_tool.int2string(msgInput->id);
 
         agent_pose_points.x = msgInput->position.x;
         //agent_pose_points.x = 2.0f;
-        std::cout << msgInput->position.x <<"msg"<< std::endl;
-        std::cout << agent_pose_points.x << std::endl;
-
-
+        // std::cout << msgInput->position.x <<"msg"<< std::endl;
+        // std::cout << agent_pose_points.x << std::endl;
         agent_pose_points.y = msgInput->position.y;
         agent_pose_points.z = msgInput->position.z;
-
         agent_quaternion.x = msgInput->quaternions[0]; 
         agent_quaternion.y = msgInput->quaternions[1]; 
         agent_quaternion.z = msgInput->quaternions[2]; 
         agent_quaternion.w = msgInput->quaternions[3];   
-        agent_states.name[msgInput->id] = agent_name;
-        agent_states.pose[msgInput->id].position = agent_pose_points;
-        agent_states.pose[msgInput->id].orientation = agent_quaternion;
-        agent_states.twist[msgInput->id].linear.x = msgInput->velocity.x;
-        agent_states.twist[msgInput->id].linear.y = msgInput->velocity.y;
-        agent_states.twist[msgInput->id].linear.z = msgInput->velocity.z;
+        agent_states.name[msgInput->id-1] = agent_name;
+        agent_states.pose[msgInput->id-1].position = agent_pose_points;
+        agent_states.pose[msgInput->id-1].orientation = agent_quaternion;
+        agent_states.twist[msgInput->id-1].linear.x = msgInput->velocity.x;
+        agent_states.twist[msgInput->id-1].linear.y = msgInput->velocity.y;
+        agent_states.twist[msgInput->id-1].linear.z = msgInput->velocity.z;
+        flags[msgInput->id-1] +=flags[msgInput->id-1];
     }
-    chatter_pub.publish(agent_states);
-
+    for(int i = 0;i<flags.size()-1;i++){
+        if((flags[i]==flags[i+1])&&(flags[1]!=flags[i+1]+1000)){
+            update = (update+1)%1000;
+        }
+    }
+    if(update==agent_number){
+        chatter_pub.publish(agent_states);
+    }
+    
 }
 
 int main(int argc, char **argv){
@@ -69,25 +67,36 @@ int main(int argc, char **argv){
     ros::init(argc, argv, "master_msgtrans");
 
     if(argc!=0){
-        // intStream << argv[0];
-        // intStream >> agent_number;
-        // intStream.clear();
-        // intStream.str("");
+
+        agent_number = transfer_tool.string2int(argv[0]);  
+
         for(int i =0;i<agent_number;i++){
             agent_states.name.push_back("");
             agent_states.pose.push_back(void_pose);
             agent_states.twist.push_back(void_twist);
+            flag.push_back(0);
         }
     }else{
         for(int i =0;i<agent_number;i++){
             agent_states.name.push_back("");
             agent_states.pose.push_back(void_pose);
             agent_states.twist.push_back(void_twist);
+            flag.push_back(0);
         }
     }
     
     ros::NodeHandle n;
-    ros::Subscriber agents_sub1 = n.subscribe("/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    std::vector<ros::Subscriber> agent_subs;
+    std::string topic_name;
+    std::string sub_name;
+    for（int i = 1;i<agent_number+1;i++){
+        topic_name = "/Slave0" + transfer_tool.int2string(i) + "/nlink_linktrack_nodeframe2";
+        sub_name = "agents_sub"+ transfer_tool.int2string(i) + "";
+        ros::Subscriber sub_name = n.subscribe(topic_name, 1000, subscribe_callback);
+        agent_subs.push_back(sub_name);
+    }  
+
+    // ros::Subscriber agents_sub1 = n.subscribe("/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub2 = n.subscribe("/Slave02/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub3 = n.subscribe("/Slave03/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub4 = n.subscribe("/Slave04/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
