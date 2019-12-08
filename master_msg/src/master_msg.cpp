@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 #include <iostream>
 #include "std_msgs/String.h"
-#include <msg_utils.h>
+#include "msg_utils.h"
 #include <gazebo_msgs/ModelStates.h>
 #include "master_msg/node_frame2.h"
 #include <geometry_msgs/Point.h>
@@ -25,7 +25,7 @@ std::string agent_name;
 
 gazebo_msgs::ModelStates agent_states;
 ros::Publisher chatter_pub;
-msg_utils::msg_utils transfer_tool;
+msg_utils transfer_tool;
 
 void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
     printf("now in callback");
@@ -56,7 +56,7 @@ void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
             update = (update+1)%1000;
         }
     }
-    if(update==agent_number){
+    if(update==agent_number-1){
         chatter_pub.publish(agent_states);
     }
     
@@ -66,6 +66,7 @@ int main(int argc, char **argv){
 
     ros::init(argc, argv, "master_msgtrans");
 
+
     if(argc!=0){
 
         agent_number = transfer_tool.string2int(argv[0]);  
@@ -74,14 +75,14 @@ int main(int argc, char **argv){
             agent_states.name.push_back("");
             agent_states.pose.push_back(void_pose);
             agent_states.twist.push_back(void_twist);
-            flag.push_back(0);
+            flags.push_back(0);
         }
     }else{
         for(int i =0;i<agent_number;i++){
             agent_states.name.push_back("");
             agent_states.pose.push_back(void_pose);
             agent_states.twist.push_back(void_twist);
-            flag.push_back(0);
+            flags.push_back(0);
         }
     }
     
@@ -89,9 +90,9 @@ int main(int argc, char **argv){
     std::vector<ros::Subscriber> agent_subs;
     std::string topic_name;
     std::string sub_name;
-    for（int i = 1;i<agent_number+1;i++){
-        topic_name = "/Slave0" + transfer_tool.int2string(i) + "/nlink_linktrack_nodeframe2";
-        sub_name = "agents_sub"+ transfer_tool.int2string(i) + "";
+    for (int j = 1; j < agent_number+1; ++j) {
+        topic_name = "/Slave0" + transfer_tool.int2string(j) + "/nlink_linktrack_nodeframe2";
+        sub_name = "agents_sub"+ transfer_tool.int2string(j) + "";
         ros::Subscriber sub_name = n.subscribe(topic_name, 1000, subscribe_callback);
         agent_subs.push_back(sub_name);
     }  

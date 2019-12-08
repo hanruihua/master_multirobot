@@ -14,8 +14,8 @@ private:
     std::stringstream intStream;
 public:
 	msg_utils();
-	int string2int();
-	string string2int() ;
+	int string2int(std::string input);
+	std::string int2string(int input);
 
 };
 

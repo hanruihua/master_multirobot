@@ -1,7 +1,6 @@
 #include "msg_utils.h"
-msg_utils::msg_utils(){
 
-}
+msg_utils::msg_utils(){}
 int msg_utils::string2int(std::string input){
     int output = -1;
     intStream.clear();
@@ -9,7 +8,7 @@ int msg_utils::string2int(std::string input){
     intStream >> output;
     return output;
 }
-string msg_utils::int2string(int input){
+std::string msg_utils::int2string(int input){
     stream.clear();  
     stream.str("");
     stream << input;
