@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(master_msg)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -145,9 +145,9 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/master_msg.cpp src/msg_utils.h src/msg_utils.cpp)
-add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES})
+add_executable(uwb_msg_node src/uwb_msg.cpp src/msg_utils.h src/msg_utils.cpp)
+add_dependencies(uwb_msg_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(uwb_msg_node ${catkin_LIBRARIES})
 
 add_executable(msg2turtlebot src/msg2turtlebot.cpp)
 target_link_libraries(msg2turtlebot ${catkin_LIBRARIES})
