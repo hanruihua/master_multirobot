@@ -67,9 +67,9 @@ int main(int argc, char **argv){
     ros::init(argc, argv, "master_msgtrans");
 
 
-    if(argc!=0){
+    if(argc >= 2){
 
-        agent_number = transfer_tool.string2int(argv[0]);  
+        agent_number = transfer_tool.string2int(argv[2]);  
 
         for(int i =0;i<agent_number;i++){
             agent_states.name.push_back("");
