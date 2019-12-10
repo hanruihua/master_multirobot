@@ -28,10 +28,10 @@ ros::Publisher chatter_pub;
 msg_utils transfer_tool;
 
 void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
-    printf("now in callback");
+    
     int update = 0;
     if(msgInput->role == 2){
-        agent_name = transfer_tool.int2string(msgInput->id);
+        agent_name = "agent" + transfer_tool.int2string(msgInput->id) + "";
 
         agent_pose_points.x = msgInput->position.x;
         //agent_pose_points.x = 2.0f;
@@ -51,6 +51,7 @@ void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
         agent_states.twist[msgInput->id-1].linear.z = msgInput->velocity.z;
         flags[msgInput->id-1] +=flags[msgInput->id-1];
     }
+    std::cout << agent_name << "is added into buffer" << std::endl;
     for(int i = 0;i<flags.size()-1;i++){
         if((flags[i]==flags[i+1])&&(flags[1]!=flags[i+1]+1000)){
             update = (update+1)%1000;
@@ -64,7 +65,7 @@ void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
 
 int main(int argc, char **argv){
 
-    ros::init(argc, argv, "master_msgtrans");
+    ros::init(argc, argv, "uwb_msg_node");
 
 
     if(argc >= 2){
