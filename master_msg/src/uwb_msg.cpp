@@ -49,7 +49,7 @@ void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
         agent_states.twist[msgInput->id-1].linear.x = msgInput->velocity.x;
         agent_states.twist[msgInput->id-1].linear.y = msgInput->velocity.y;
         agent_states.twist[msgInput->id-1].linear.z = msgInput->velocity.z;
-        flags[msgInput->id-1] +=flags[msgInput->id-1];
+        flags[msgInput->id-1] = flags[msgInput->id-1] + 1;
     }
     std::cout << agent_name << "is added into buffer" << std::endl;
     for(int i = 0;i<flags.size()-1;i++){
