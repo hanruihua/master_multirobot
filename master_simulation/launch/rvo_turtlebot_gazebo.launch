@@ -1,0 +1,96 @@
+<launch>
+    <arg name="world_file" default="$(find master_simulation)/gazebo/empty.world" />
+    <arg name="base" value="$(optenv TURTLEBOT_BASE kobuki)" /> <!-- create, roomba -->
+    <arg name="battery" value="$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)" /> <!-- /proc/acpi/battery/BAT0 -->
+    <arg name="paused" value="true" />
+    <arg name="gui" default="true" />
+    <arg name="headless" value="true" />
+    <arg name="stacks" value="$(optenv TURTLEBOT_STACKS hexagons)" /> <!-- circles, hexagons -->
+    <arg name="3d_sensor" value="$(optenv TURTLEBOT_3D_SENSOR kinect)" /> <!-- kinect, asus_xtion_pro -->
+    <!-- <arg name="ROBOT_INITIAL_POSE0" value="-x 0.5 -y 0.5" /> -->
+
+    <arg name="ROBOT_INITIAL_POSE1" value="-x 1 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE2" value="-x 1 -y 2 " />
+    <arg name="ROBOT_INITIAL_POSE3" value="-x 1 -y 3 " />
+    <arg name="ROBOT_INITIAL_POSE4" value="-x 1 -y 4 " />
+
+    <arg name="robot1" value="agent1" />
+    <arg name="robot2" value="agent2" />
+    <arg name="robot3" value="agent3" />
+    <arg name="robot4" value="agent4" />
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="use_sim_time" value="true" />
+        <arg name="debug" value="false" />
+        <arg name="gui" value="$(arg gui)" />
+        <arg name="world_name" value="$(arg world_file)" />
+        <arg name="verbose" value="true" />
+    </include>
+
+    <group ns="Slave01">
+        <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
+            <arg name="base" value="$(arg base)" />
+            <arg name="stacks" value="$(arg stacks)" />
+            <arg name="3d_sensor" value="$(arg 3d_sensor)" />
+            <arg name="ROBOT_INITIAL_POSE" value="$(arg ROBOT_INITIAL_POSE1)" />
+            <arg name="model" value="$(arg robot1)" />
+        </include>
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+            <param name="publish_frequency" type="double" value="30.0" />
+        </node>
+    </group>
+
+    <group ns="Slave02">
+
+        <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
+            <arg name="base" value="$(arg base)" />
+            <arg name="stacks" value="$(arg stacks)" />
+            <arg name="3d_sensor" value="$(arg 3d_sensor)" />
+            <arg name="ROBOT_INITIAL_POSE" value="$(arg ROBOT_INITIAL_POSE2)" />
+            <arg name="model" value="$(arg robot2)" />
+        </include>
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+            <param name="publish_frequency" type="double" value="30.0" />
+        </node>
+    </group>
+
+    <group ns="Slave03">
+
+        <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
+            <arg name="base" value="$(arg base)" />
+            <arg name="stacks" value="$(arg stacks)" />
+            <arg name="3d_sensor" value="$(arg 3d_sensor)" />
+            <arg name="ROBOT_INITIAL_POSE" value="$(arg ROBOT_INITIAL_POSE3)" />
+            <arg name="model" value="$(arg robot3)" />
+        </include>
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+            <param name="publish_frequency" type="double" value="30.0" />
+        </node>
+    </group>
+
+    <group ns="Slave04">
+
+        <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
+            <arg name="base" value="$(arg base)" />
+            <arg name="stacks" value="$(arg stacks)" />
+            <arg name="3d_sensor" value="$(arg 3d_sensor)" />
+            <arg name="ROBOT_INITIAL_POSE" value="$(arg ROBOT_INITIAL_POSE4)" />
+            <arg name="model" value="$(arg robot4)" />
+        </include>
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+            <param name="publish_frequency" type="double" value="30.0" />
+        </node>
+    </group>
+
+    <node name="rvo_node" pkg="rvo_ros" type="rvo_node">
+        <remap from="/rvo/model_states" to="/gazebo/model_states"/>
+        <!-- <!<remap from="/rvo_vel" to="/obstacles_velocity"/>  -->
+    </node>
+
+    <node name="msg2turtlebot" pkg="master_msg" type="msg2turtlebot"/>
+
+</launch>
