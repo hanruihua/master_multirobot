@@ -69,7 +69,7 @@ int main(int argc, char **argv){
 
     if(argc >= 2){
 
-        agent_number = transfer_tool.string2int(argv[2]);  
+        agent_number = transfer_tool.string2int(argv[1]);
 
         for(int i =0;i<agent_number;i++){
             agent_states.name.push_back("");
