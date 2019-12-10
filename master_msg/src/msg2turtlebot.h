@@ -11,7 +11,7 @@ std::vector<ros::Publisher> turtlebot_pub;
 const int max_agent = 10;
 int num_robots;
 
-float cal_raw(geometry_msgs::Quaternion quater);
+float cal_yaw(geometry_msgs::Quaternion quater);
 
 
 
