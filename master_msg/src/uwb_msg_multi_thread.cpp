@@ -53,7 +53,7 @@ void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
         agent_states.twist[msgInput->id-1].linear.z = msgInput->velocity.z;
         flags[msgInput->id-1] = flags[msgInput->id-1] + 1;
     }
-    std::cout << agent_name << "is added into buffer" << std::endl;
+    //std::cout << agent_name << "is added into buffer" << std::endl;
     //ROS_INFO("Called callback\n");
 }
 
@@ -98,7 +98,9 @@ int main(int argc, char **argv){
     n1.setCallbackQueue(&sub_queue1);
     n2.setCallbackQueue(&sub_queue2);
     n3.setCallbackQueue(&sub_queue3);
-
+    sub_queue1.clear();
+    sub_queue2.clear();
+    sub_queue3.clear();
     ros::Subscriber agents_sub1 = n1.subscribe("/Slave01/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     ros::Subscriber agents_sub2 = n2.subscribe("/Slave02/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     ros::Subscriber agents_sub3 = n3.subscribe("/Slave03/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
@@ -116,21 +118,25 @@ int main(int argc, char **argv){
 
     while(ros::ok()){
         int update = 0;
-        sub_queue1.callOne(ros::WallDuration(0.1));
-        sub_queue2.callOne(ros::WallDuration(0.1));
-        sub_queue3.callOne(ros::WallDuration(0.1));
-
         loop_rate.sleep();
+        sub_queue1.callOne(ros::WallDuration(0));
+        loop_rate.sleep();
+        sub_queue2.callOne(ros::WallDuration(0));
+        loop_rate.sleep();
+        sub_queue3.callOne(ros::WallDuration(0));
+        std::cout << "flags are " + std::to_string(flags[0]) +","+ std::to_string(flags[1]) +","+ std::to_string(flags[2]) << std::endl;
+        
 
         for(int i = 0;i<flags.size()-1;i++){
             if((flags[i]==flags[i+1])&&(flags[1]!=flags[i+1]+1000)){
                 update = (update+1)%1000;
             }
         }
-        loop_rate.sleep();
+        
         if(update==agent_number-1){
+            std::cout << "into publish"<<std::endl;
             chatter_pub.publish(agent_states);
-            loop_rate.sleep();
+            
         }
 
     }
