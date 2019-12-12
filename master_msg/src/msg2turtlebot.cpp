@@ -5,15 +5,6 @@ void rvo_callback(const gazebo_msgs::ModelStates::ConstPtr &msg)
     num_robots = msg->twist.size();
     std::vector<geometry_msgs::Twist> vector_twist;
 
-    float rvo_x = msg->twist[0].linear.x;
-    float rvo_y = msg->twist[0].linear.y;
-
-    float angle_vel = atan(rvo_y / rvo_x);
-
-    // std::cout<<rvo_x<<"The velocity x of agent1"<<std::endl;
-    // std::cout<<rvo_y<<"The velocity y of agent1"<<std::endl;
-    // std::cout<<angle_vel<<"The velocity direction of agent1"<<std::endl;
-
     for (int i = 0; i < num_robots; i++)
     {
         geometry_msgs::Twist twist;
@@ -27,9 +18,9 @@ void rvo_callback(const gazebo_msgs::ModelStates::ConstPtr &msg)
         }
         else
         {
-            float speed = sqrt(pow(rvo_x, 2) + pow(rvo_y, 2));
+            double speed = sqrt(pow(rvo_x, 2) + pow(rvo_y, 2));
 
-            if (speed < 0.05)
+            if (speed < 0.01)
                 twist.linear.x = 0;
             else
                 twist.linear.x = speed;
@@ -40,9 +31,9 @@ void rvo_callback(const gazebo_msgs::ModelStates::ConstPtr &msg)
             float diff = angle_yaw - angle_vel;
 
             // twist.angular.z = (diff > 0.02) ? (diff < 3.1415926 ? -0.5 : 0.5) : (diff < );    
-            if (angle_yaw - angle_vel > 0.02)
+            if (angle_yaw - angle_vel > 0.05)
                 twist.angular.z = diff < 3.1415926 ? -0.5 : 0.5;
-            else if (angle_yaw - angle_vel < -0.02)
+            else if (angle_yaw - angle_vel < -0.05)
                 twist.angular.z = diff < -3.1415926 ? -0.5 : 0.5;
             else
                 twist.angular.z = 0;
