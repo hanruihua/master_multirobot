@@ -93,15 +93,15 @@ int main(int argc, char **argv){
 //        ros::Subscriber sub_name = n.subscribe(topic_name, 1000, subscribe_callback);
 //        agent_subs.push_back(sub_name);
 //    }
-    ros::NodeHandle n,n2,n3;
+    ros::NodeHandle n,n1,n2,n3;
 
-    n.setCallbackQueue(&sub_queue1);
+    n1.setCallbackQueue(&sub_queue1);
     n2.setCallbackQueue(&sub_queue2);
     n3.setCallbackQueue(&sub_queue3);
 
-    ros::Subscriber agents_sub1 = n.subscribe("/Slave01/nlink_linktrack_nodeframe2", 50, subscribe_callback);
-    ros::Subscriber agents_sub2 = n2.subscribe("/Slave02/nlink_linktrack_nodeframe2", 50, subscribe_callback);
-    ros::Subscriber agents_sub3 = n3.subscribe("/Slave03/nlink_linktrack_nodeframe2", 50, subscribe_callback);
+    ros::Subscriber agents_sub1 = n1.subscribe("/Slave01/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    ros::Subscriber agents_sub2 = n2.subscribe("/Slave02/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    ros::Subscriber agents_sub3 = n3.subscribe("/Slave03/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     //ros::Subscriber agents_sub4 = n4.subscribe("/Slave04/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
      //ros::Subscriber agents_sub5 = n.subscribe("/Slave05/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub6 = n.subscribe("/Slave06/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
@@ -110,27 +110,33 @@ int main(int argc, char **argv){
     // ros::Subscriber agents_sub9 = n.subscribe("/Slave09/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub10 = n.subscribe("/Slave10/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
 
-    chatter_pub = n.advertise<gazebo_msgs::ModelStates>("agent_status",50);
+    chatter_pub = n.advertise<gazebo_msgs::ModelStates>("agent_status",1000);
 
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(30);
 
     while(ros::ok()){
         int update = 0;
         sub_queue1.callOne(ros::WallDuration(0.1));
         sub_queue2.callOne(ros::WallDuration(0.1));
         sub_queue3.callOne(ros::WallDuration(0.1));
+
+        loop_rate.sleep();
+
         for(int i = 0;i<flags.size()-1;i++){
             if((flags[i]==flags[i+1])&&(flags[1]!=flags[i+1]+1000)){
                 update = (update+1)%1000;
             }
         }
+        loop_rate.sleep();
         if(update==agent_number-1){
             chatter_pub.publish(agent_states);
+            loop_rate.sleep();
         }
 
-        loop_rate.sleep();
-
     }
+    sub_queue1.clear();
+    sub_queue2.clear();
+    sub_queue3.clear();
     return 0;
 }
 
