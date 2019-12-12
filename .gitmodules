@@ -1,3 +1,3 @@
-[submodule "librvo_ros"]
+[submodule "master_planning/rvo_ros"]
 	path = master_planning/rvo_ros
 	url = https://github.com/hanruihua/rvo_ros.git
