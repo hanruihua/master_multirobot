@@ -10,14 +10,18 @@
     <!-- <arg name="ROBOT_INITIAL_POSE0" value="-x 0.5 -y 0.5" /> -->
 
     <arg name="ROBOT_INITIAL_POSE1" value="-x 1 -y 1 " />
-    <arg name="ROBOT_INITIAL_POSE2" value="-x 1 -y 2 " />
-    <arg name="ROBOT_INITIAL_POSE3" value="-x 1 -y 3 " />
-    <arg name="ROBOT_INITIAL_POSE4" value="-x 1 -y 4 " />
+    <arg name="ROBOT_INITIAL_POSE2" value="-x 2 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE3" value="-x 3 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE4" value="-x 4 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE5" value="-x 5 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE6" value="-x 6 -y 1 " />
 
     <arg name="robot1" value="agent1" />
     <arg name="robot2" value="agent2" />
     <arg name="robot3" value="agent3" />
     <arg name="robot4" value="agent4" />
+    <arg name="robot5" value="agent5" />
+    <arg name="robot6" value="agent6" />
 
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="use_sim_time" value="true" />
@@ -79,6 +83,36 @@
             <arg name="3d_sensor" value="$(arg 3d_sensor)" />
             <arg name="ROBOT_INITIAL_POSE" value="$(arg ROBOT_INITIAL_POSE4)" />
             <arg name="model" value="$(arg robot4)" />
+        </include>
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+            <param name="publish_frequency" type="double" value="30.0" />
+        </node>
+    </group>
+
+    <group ns="Slave05">
+
+        <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
+            <arg name="base" value="$(arg base)" />
+            <arg name="stacks" value="$(arg stacks)" />
+            <arg name="3d_sensor" value="$(arg 3d_sensor)" />
+            <arg name="ROBOT_INITIAL_POSE" value="$(arg ROBOT_INITIAL_POSE5)" />
+            <arg name="model" value="$(arg robot5)" />
+        </include>
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+            <param name="publish_frequency" type="double" value="30.0" />
+        </node>
+    </group>
+
+    <group ns="Slave06">
+
+        <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
+            <arg name="base" value="$(arg base)" />
+            <arg name="stacks" value="$(arg stacks)" />
+            <arg name="3d_sensor" value="$(arg 3d_sensor)" />
+            <arg name="ROBOT_INITIAL_POSE" value="$(arg ROBOT_INITIAL_POSE6)" />
+            <arg name="model" value="$(arg robot6)" />
         </include>
 
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
