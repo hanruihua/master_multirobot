@@ -28,7 +28,7 @@ ros::Publisher chatter_pub;
 msg_utils transfer_tool;
 
 void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
-    
+
     int update = 0;
     if(msgInput->role == 2){
         agent_name = "agent" + transfer_tool.int2string(msgInput->id) + "";
@@ -39,10 +39,10 @@ void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
         // std::cout << agent_pose_points.x << std::endl;
         agent_pose_points.y = msgInput->position.y;
         agent_pose_points.z = msgInput->position.z;
-        agent_quaternion.x = msgInput->quaternions[0]; 
-        agent_quaternion.y = msgInput->quaternions[1]; 
-        agent_quaternion.z = msgInput->quaternions[2]; 
-        agent_quaternion.w = msgInput->quaternions[3];   
+        agent_quaternion.x = msgInput->quaternions[0];
+        agent_quaternion.y = msgInput->quaternions[1];
+        agent_quaternion.z = msgInput->quaternions[2];
+        agent_quaternion.w = msgInput->quaternions[3];
         agent_states.name[msgInput->id-1] = agent_name;
         agent_states.pose[msgInput->id-1].position = agent_pose_points;
         agent_states.pose[msgInput->id-1].orientation = agent_quaternion;
@@ -60,7 +60,7 @@ void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
     if(update==agent_number-1){
         chatter_pub.publish(agent_states);
     }
-    
+
 }
 void subscribe_callback2(const master_msg::node_frame2::ConstPtr& msgInput){
 
@@ -156,7 +156,7 @@ int main(int argc, char **argv){
             flags.push_back(0);
         }
     }
-    
+
     ros::NodeHandle n;
     std::vector<ros::Subscriber> agent_subs;
     std::string topic_name;
@@ -178,7 +178,7 @@ int main(int argc, char **argv){
     // ros::Subscriber agents_sub8 = n.subscribe("/Slave08/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub9 = n.subscribe("/Slave09/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub10 = n.subscribe("/Slave10/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
-    
+
     chatter_pub = n.advertise<gazebo_msgs::ModelStates>("agent_status",1000);
 
     ros::Rate loop_rate(10);
@@ -186,7 +186,7 @@ int main(int argc, char **argv){
     while(ros::ok()){
         ros::spinOnce();
         loop_rate.sleep();
-    
+
     }
     return 0;
 }

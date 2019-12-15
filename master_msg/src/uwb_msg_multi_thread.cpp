@@ -15,6 +15,7 @@
 #include <geometry_msgs/Vector3.h>
 #include "geometry_msgs/Twist.h"
 #include <ros/callback_queue.h>
+#include <boost/thread.hpp>
 
 int agent_number = 10;
 std::vector<int> flags;
@@ -25,6 +26,9 @@ geometry_msgs::Point  agent_pose_points;
 geometry_msgs::Quaternion  agent_quaternion;
 geometry_msgs::Twist twist;
 std::string agent_name;
+ros::CallbackQueue sub_queue1;
+ros::CallbackQueue sub_queue2;
+ros::CallbackQueue sub_queue3;
 
 gazebo_msgs::ModelStates agent_states;
 ros::Publisher chatter_pub;
@@ -52,18 +56,67 @@ void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
         agent_states.twist[msgInput->id-1].linear.y = msgInput->velocity.y;
         agent_states.twist[msgInput->id-1].linear.z = msgInput->velocity.z;
         flags[msgInput->id-1] = flags[msgInput->id-1] + 1;
+
+        //printf("%05x\n",msgInput->id);
+        //std::cout << std::hex << msgInput->id << "is added into buffer" << std::endl;
     }
-    //std::cout << agent_name << "is added into buffer" << std::endl;
+
+
     //ROS_INFO("Called callback\n");
+}
+
+void threadfunction1(){
+    std::cout << "Callback thread id=" << boost::this_thread::get_id()<< std::endl;
+    ros::NodeHandle n1;
+    n1.setCallbackQueue(&sub_queue1);
+    ros::Subscriber agents_sub1 = n1.subscribe("/Slave01/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    // ros::Subscriber agents_sub2 = n2.subscribe("/Slave02/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    // ros::Subscriber agents_sub3 = n3.subscribe("/Slave03/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+
+    //n2.setCallbackQueue(&sub_queue2);
+    //n3.setCallbackQueue(&sub_queue3);
+    while (n1.ok())
+    {
+        //std::cout<<"int sub_queue 1"<<std::endl;
+        sub_queue1.callOne(ros::WallDuration(0.1));
+    }
+}
+void threadfunction2(){
+    std::cout << "Callback thread id=" << boost::this_thread::get_id()<< std::endl;
+    ros::NodeHandle n2;
+    n2.setCallbackQueue(&sub_queue2);
+    // ros::Subscriber agents_sub1 = n1.subscribe("/Slave01/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    ros::Subscriber agents_sub2 = n2.subscribe("/Slave02/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    // ros::Subscriber agents_sub3 = n3.subscribe("/Slave03/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    //n1.setCallbackQueue(&sub_queue1);
+
+    //n3.setCallbackQueue(&sub_queue3);
+    while (n2.ok())
+    {
+        //std::cout<<"int sub_queue 2"<<std::endl;
+        sub_queue2.callOne(ros::WallDuration(0.1));
+    }
+}
+void threadfunction3(){
+    std::cout << "Callback thread id=" << boost::this_thread::get_id()<< std::endl;
+    ros::NodeHandle n3;
+    // ros::Subscriber agents_sub1 = n1.subscribe("/Slave01/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    // ros::Subscriber agents_sub2 = n2.subscribe("/Slave02/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    //n1.setCallbackQueue(&sub_queue1);
+    //n2.setCallbackQueue(&sub_queue2);
+    n3.setCallbackQueue(&sub_queue3);
+    ros::Subscriber agents_sub3 = n3.subscribe("/Slave03/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    while (n3.ok())
+    {
+        //std::cout<<"int sub_queue 3"<<std::endl;
+        sub_queue3.callOne(ros::WallDuration(0.1));
+    }
 }
 
 int main(int argc, char **argv){
 
     ros::init(argc, argv, "uwb_msg_node");
-    ros::CallbackQueue sub_queue1;
-    ros::CallbackQueue sub_queue2;
-    ros::CallbackQueue sub_queue3;
-
+    
     if(argc >= 2){
 
         agent_number = transfer_tool.string2int(argv[1]);
@@ -82,8 +135,6 @@ int main(int argc, char **argv){
             flags.push_back(0);
         }
     }
-
-
 //    std::vector<ros::Subscriber> agent_subs;
 //    std::string topic_name;
 //    std::string sub_name;
@@ -93,56 +144,54 @@ int main(int argc, char **argv){
 //        ros::Subscriber sub_name = n.subscribe(topic_name, 1000, subscribe_callback);
 //        agent_subs.push_back(sub_name);
 //    }
-    ros::NodeHandle n,n1,n2,n3;
-
-    n1.setCallbackQueue(&sub_queue1);
-    n2.setCallbackQueue(&sub_queue2);
-    n3.setCallbackQueue(&sub_queue3);
+    ros::NodeHandle n;
     sub_queue1.clear();
     sub_queue2.clear();
     sub_queue3.clear();
-    ros::Subscriber agents_sub1 = n1.subscribe("/Slave01/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
-    ros::Subscriber agents_sub2 = n2.subscribe("/Slave02/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
-    ros::Subscriber agents_sub3 = n3.subscribe("/Slave03/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    // ros::Subscriber agents_sub1 = n1.subscribe("/Slave01/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    // ros::Subscriber agents_sub2 = n2.subscribe("/Slave02/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    // ros::Subscriber agents_sub3 = n3.subscribe("/Slave03/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     //ros::Subscriber agents_sub4 = n4.subscribe("/Slave04/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
-     //ros::Subscriber agents_sub5 = n.subscribe("/Slave05/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
+    //ros::Subscriber agents_sub5 = n.subscribe("/Slave05/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub6 = n.subscribe("/Slave06/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub7 = n.subscribe("/Slave07/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub8 = n.subscribe("/Slave08/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub9 = n.subscribe("/Slave09/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub10 = n.subscribe("/Slave10/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
 
-    chatter_pub = n.advertise<gazebo_msgs::ModelStates>("agent_status",1000);
+    chatter_pub = n.advertise<gazebo_msgs::ModelStates>("agent_states",1000);
 
-    ros::Rate loop_rate(30);
+    ros::Rate loop_rate(10);
+    boost::thread sub_thread1(threadfunction1);
 
+    boost::thread sub_thread3(threadfunction3);
+    boost::thread sub_thread2(threadfunction2);
     while(ros::ok()){
         int update = 0;
-        loop_rate.sleep();
-        sub_queue1.callOne(ros::WallDuration(0));
-        loop_rate.sleep();
-        sub_queue2.callOne(ros::WallDuration(0));
-        loop_rate.sleep();
-        sub_queue3.callOne(ros::WallDuration(0));
-        std::cout << "flags are " + std::to_string(flags[0]) +","+ std::to_string(flags[1]) +","+ std::to_string(flags[2]) << std::endl;
-        
-
+        //sub_queue1.callOne(ros::WallDuration(0));
+        //loop_rate.sleep();
+        //sub_queue2.callOne(ros::WallDuration(0));        
+        //loop_rate.sleep();     
+        //sub_queue3.callOne(ros::WallDuration(0));                
+        std::cout << "flags are " + std::to_string(flags[0]) +","+ std::to_string(flags[1]) +","+ std::to_string(flags[2]) << std::endl;        
         for(int i = 0;i<flags.size()-1;i++){
             if((flags[i]==flags[i+1])&&(flags[1]!=flags[i+1]+1000)){
                 update = (update+1)%1000;
             }
         }
-        
+        loop_rate.sleep();     
         if(update==agent_number-1){
             std::cout << "into publish"<<std::endl;
-            chatter_pub.publish(agent_states);
-            
+            chatter_pub.publish(agent_states);            
         }
 
     }
     sub_queue1.clear();
     sub_queue2.clear();
     sub_queue3.clear();
+    sub_thread1.join();
+    sub_thread2.join();
+    sub_thread3.join();
     return 0;
 }
 
