@@ -1,5 +1,3 @@
-// Created by ubuntu on 19-12-12.
-//
 #include <ros/ros.h>
 #include <iostream>
 #include "std_msgs/String.h"
@@ -26,6 +24,18 @@ std::string agent_name;
 gazebo_msgs::ModelStates agent_states;
 ros::Publisher chatter_pub;
 msg_utils transfer_tool;
+std::vector<ros::CallbackQueue*> sub_queue_list;
+ros::CallbackQueue sub_queue1;
+ros::CallbackQueue sub_queue2;
+ros::CallbackQueue sub_queue3;
+ros::CallbackQueue sub_queue4;
+ros::CallbackQueue sub_queue5;
+ros::CallbackQueue sub_queue6;
+ros::CallbackQueue sub_queue7;
+ros::CallbackQueue sub_queue8;
+ros::CallbackQueue sub_queue9;
+ros::CallbackQueue sub_queue10;
+
 
 
 void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
@@ -77,23 +87,30 @@ int main(int argc, char **argv){
         }
     }
 
-    std::vector<ros::CallbackQueue*> sub_queue_list;
-
     std::vector<ros::Subscriber> agent_subs;
     std::string topic_name;
     std::string sub_name;
 //    ros::CallbackQueue sub_queue1;
 //    ros::CallbackQueue sub_queue2;
 //    ros::CallbackQueue sub_queue3;
+    sub_queue_list.push_back(&sub_queue1);
+    sub_queue_list.push_back(&sub_queue2);
+    sub_queue_list.push_back(&sub_queue3);
+    sub_queue_list.push_back(&sub_queue4);
+    sub_queue_list.push_back(&sub_queue5);
+    sub_queue_list.push_back(&sub_queue6);
+    sub_queue_list.push_back(&sub_queue7);
+    sub_queue_list.push_back(&sub_queue8);
+    sub_queue_list.push_back(&sub_queue9);
+    sub_queue_list.push_back(&sub_queue10);
     for (int j = 1; j < agent_number+1; ++j) {
         ros::NodeHandle n;
-        ros::CallbackQueue sub_queue;
-        n.setCallbackQueue(&sub_queue);
+        n.setCallbackQueue(sub_queue_list[j-1]);
         topic_name = "/Slave0" + transfer_tool.int2string(j) + "/nlink_linktrack_nodeframe2";
         sub_name = "agents_sub"+ transfer_tool.int2string(j) + "";
         ros::Subscriber sub_name = n.subscribe(topic_name, 1000, subscribe_callback);
         agent_subs.push_back(sub_name);
-        sub_queue_list.push_back(&sub_queue);
+        //sub_queue_list.push_back(&sub_queue);
     }
     ros::NodeHandle n;
 
@@ -108,14 +125,14 @@ int main(int argc, char **argv){
     // ros::Subscriber agents_sub9 = n.subscribe("/Slave09/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub10 = n.subscribe("/Slave10/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
 
-    chatter_pub = n.advertise<gazebo_msgs::ModelStates>("agent_status",1000);
+    chatter_pub = n.advertise<gazebo_msgs::ModelStates>("agent_states",1000);
 
     ros::Rate loop_rate(30);
 
     while(ros::ok()){
         int update = 0;
 
-        for(int j = 0; j< sub_queue_list.size();j++){
+        for(int j = 0; j< agent_number;j++){
             loop_rate.sleep();
             sub_queue_list[j]->callOne(ros::WallDuration(0));
         }
@@ -132,7 +149,7 @@ int main(int argc, char **argv){
                 update = (update+1)%1000;
             }
         }
-        std::cout << "flags are " + std::to_string(flags[0]) +","+ std::to_string(flags[1]) +","+ std::to_string(flags[2]) << std::endl;
+        std::cout << "flags are " + std::to_string(flags[0]) +","+ std::to_string(flags[1]) +","+ std::to_string(flags[2]) +","+ std::to_string(flags[3]) << std::endl;
 
         chatter_pub.publish(agent_states);
 
@@ -144,6 +161,3 @@ int main(int argc, char **argv){
     }
     return 0;
 }
-
-
-
