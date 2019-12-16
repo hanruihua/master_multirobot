@@ -1,16 +1,19 @@
 <launch>
 
-    <node name="uwb_msg_node" pkg="master_msg" type="uwb_msg_node" args="3">
-        <remap from="/agent_status" to="/rvo/model_states" />
-    </node>
+    <arg name="init_point" default="1 1 2 1 3 1 4 1" />
+    <arg name="num_agent" default="6"/>
 
-    <!-- <node name="rvo_node" pkg="rvo_ros" type="rvo_node">
-        <remap from="/rvo/model_states" to="/gazebo/model_states" /> 
-         <!<remap from="/rvo_vel" to="/obstacles_velocity"/>  
-    </node> -->
+        <node name="uwb_msg_node" pkg="master_msg" type="uwb_msg_node" args="$(arg num_agent)">
+            <remap from="/agent_states" to="/rvo/model_states" />
+        </node>
 
-    <node name="rvo_node" pkg="rvo_ros" type="rvo_node"/>
+        <node name="rvo_node" pkg="rvo_ros" type="rvo_node" args="$(arg init_point)">
+            <!-- <remap from="/rvo/model_states" to="/gazebo/model_states" />  -->
+            <!-- <remap from="/rvo_vel" to="/obstacles_velocity"/>   -->
+        </node>
 
-    <node name="msg2turtlebot" pkg="master_msg" type="msg2turtlebot" />
+        <!-- <node name="rvo_node" pkg="rvo_ros" type="rvo_node"/> -->
+
+        <node name="msg2turtlebot" pkg="master_msg" type="msg2turtlebot" />
 
 </launch>
