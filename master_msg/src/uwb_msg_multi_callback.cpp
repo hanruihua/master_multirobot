@@ -108,7 +108,7 @@ int main(int argc, char **argv){
         n.setCallbackQueue(sub_queue_list[j-1]);
         topic_name = "/Slave0" + transfer_tool.int2string(j) + "/nlink_linktrack_nodeframe2";
         sub_name = "agents_sub"+ transfer_tool.int2string(j) + "";
-        ros::Subscriber sub_name = n.subscribe(topic_name, 1000, subscribe_callback);
+        ros::Subscriber sub_name = n.subscribe(topic_name, 100, subscribe_callback);
         agent_subs.push_back(sub_name);
         //sub_queue_list.push_back(&sub_queue);
     }
@@ -127,13 +127,13 @@ int main(int argc, char **argv){
 
     chatter_pub = n.advertise<gazebo_msgs::ModelStates>("agent_states",1000);
 
-    ros::Rate loop_rate(30);
+    ros::Rate loop_rate(50);
 
     while(ros::ok()){
         int update = 0;
 
         for(int j = 0; j< agent_number;j++){
-            loop_rate.sleep();
+            //loop_rate.sleep();
             sub_queue_list[j]->callOne(ros::WallDuration(0));
         }
 
