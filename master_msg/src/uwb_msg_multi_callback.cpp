@@ -2,7 +2,6 @@
 #include <iostream>
 #include "std_msgs/String.h"
 #include "msg_utils.h"
-#include <gazebo_msgs/ModelStates.h>
 #include "master_msg/node_frame2.h"
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
@@ -10,6 +9,8 @@
 #include <geometry_msgs/Vector3.h>
 #include "geometry_msgs/Twist.h"
 #include <ros/callback_queue.h>
+#include "geometry_msgs/PoseArray.h"
+
 
 int agent_number = 10;
 std::vector<int> flags;
@@ -18,10 +19,10 @@ geometry_msgs::Twist void_twist;
 
 geometry_msgs::Point  agent_pose_points;
 geometry_msgs::Quaternion  agent_quaternion;
-geometry_msgs::Twist twist;
-std::string agent_name;
 
-gazebo_msgs::ModelStates agent_states;
+uint32_t my_seq = 0;
+
+geometry_msgs::PoseArray agent_states;
 ros::Publisher chatter_pub;
 msg_utils transfer_tool;
 std::vector<ros::CallbackQueue*> sub_queue_list;
@@ -40,24 +41,15 @@ ros::CallbackQueue sub_queue10;
 
 void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
     if(msgInput->role == 2){
-        agent_name = "agent" + transfer_tool.int2string(msgInput->id) + "";
-
         agent_pose_points.x = msgInput->position.x;
-        //agent_pose_points.x = 2.0f;
-        // std::cout << msgInput->position.x <<"msg"<< std::endl;
-        // std::cout << agent_pose_points.x << std::endl;
         agent_pose_points.y = msgInput->position.y;
         agent_pose_points.z = msgInput->position.z;
         agent_quaternion.x = msgInput->quaternions[0];
         agent_quaternion.y = msgInput->quaternions[1];
         agent_quaternion.z = msgInput->quaternions[2];
         agent_quaternion.w = msgInput->quaternions[3];
-        agent_states.name[msgInput->id-1] = agent_name;
-        agent_states.pose[msgInput->id-1].position = agent_pose_points;
-        agent_states.pose[msgInput->id-1].orientation = agent_quaternion;
-        agent_states.twist[msgInput->id-1].linear.x = msgInput->velocity.x;
-        agent_states.twist[msgInput->id-1].linear.y = msgInput->velocity.y;
-        agent_states.twist[msgInput->id-1].linear.z = msgInput->velocity.z;
+        agent_states.poses[msgInput->id-1].position = agent_pose_points;
+        agent_states.poses[msgInput->id-1].orientation = agent_quaternion;
         flags[msgInput->id-1] = flags[msgInput->id-1] + 1;
     }
     //std::cout << agent_name << "is added into buffer" << std::endl;
@@ -73,16 +65,12 @@ int main(int argc, char **argv){
         agent_number = transfer_tool.string2int(argv[1]);
 
         for(int i =0;i<agent_number;i++){
-            agent_states.name.push_back("");
-            agent_states.pose.push_back(void_pose);
-            agent_states.twist.push_back(void_twist);
+            agent_states.poses.push_back(void_pose);
             flags.push_back(0);
         }
     }else{
         for(int i =0;i<agent_number;i++){
-            agent_states.name.push_back("");
-            agent_states.pose.push_back(void_pose);
-            agent_states.twist.push_back(void_twist);
+            agent_states.poses.push_back(void_pose);
             flags.push_back(0);
         }
     }
@@ -90,9 +78,6 @@ int main(int argc, char **argv){
     std::vector<ros::Subscriber> agent_subs;
     std::string topic_name;
     std::string sub_name;
-//    ros::CallbackQueue sub_queue1;
-//    ros::CallbackQueue sub_queue2;
-//    ros::CallbackQueue sub_queue3;
     sub_queue_list.push_back(&sub_queue1);
     sub_queue_list.push_back(&sub_queue2);
     sub_queue_list.push_back(&sub_queue3);
@@ -125,7 +110,7 @@ int main(int argc, char **argv){
     // ros::Subscriber agents_sub9 = n.subscribe("/Slave09/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
     // ros::Subscriber agents_sub10 = n.subscribe("/Slave10/nlink_linktrack_nodeframe2", 1000, subscribe_callback);
 
-    chatter_pub = n.advertise<gazebo_msgs::ModelStates>("agent_states",1000);
+    chatter_pub = n.advertise<geometry_msgs::PoseArray>("agent_states",1000);
 
     ros::Rate loop_rate(50);
 
@@ -151,8 +136,14 @@ int main(int argc, char **argv){
         }
         std::cout << "flags are " + std::to_string(flags[0]) +","+ std::to_string(flags[1]) +","+ std::to_string(flags[2]) +","+ std::to_string(flags[3]) << std::endl;
 
+        agent_states.header.frame_id="1";
+        ros::Time current_time = ros::Time::now();
+        agent_states.header.stamp = current_time;
+        agent_states.header.seq = my_seq;
         chatter_pub.publish(agent_states);
-
+        my_seq = my_seq+1;
+        
+        loop_rate.sleep();
 //        if(update==agent_number-1){
 //            chatter_pub.publish(agent_states);
 //            loop_rate.sleep();
