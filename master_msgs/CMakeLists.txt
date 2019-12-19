@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(master_msg)
+project(master_msgs)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   geometry_msgs
+  nav_msgs
+  sensor_msgs
   message_generation
 )
 
@@ -63,6 +65,7 @@ add_message_files(
   node_frame1.msg
   node2_t.msg
   node_frame2.msg
+  global_info.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -84,6 +87,8 @@ add_message_files(
    DEPENDENCIES
    std_msgs
    geometry_msgs
+   nav_msgs
+   sensor_msgs
  )
 
 ################################################
@@ -118,7 +123,8 @@ add_message_files(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES multi_robot
-  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs message_runtime
+  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs message_runtime   nav_msgs
+  sensor_msgs
 #  DEPENDS system_lib
 )
 
