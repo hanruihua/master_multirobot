@@ -31,10 +31,10 @@ void rvo_callback(const gazebo_msgs::ModelStates::ConstPtr &msg)
             float diff = angle_yaw - angle_vel;
 
             // twist.angular.z = (diff > 0.02) ? (diff < 3.1415926 ? -0.5 : 0.5) : (diff < );    
-            if (angle_yaw - angle_vel > 0.05)
-                twist.angular.z = diff < 3.1415926 ? -0.5 : 0.5;
-            else if (angle_yaw - angle_vel < -0.05)
-                twist.angular.z = diff < -3.1415926 ? -0.5 : 0.5;
+            if (angle_yaw - angle_vel > 0.1)
+                twist.angular.z = diff < 3.1415926 ? -1 : 1;
+            else if (angle_yaw - angle_vel < -0.1)
+                twist.angular.z = diff < -3.1415926 ? -1 : 1;
             else
                 twist.angular.z = 0;
 
