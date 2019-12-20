@@ -11,7 +11,7 @@ void rvo_callback(const gazebo_msgs::ModelStates::ConstPtr &msg)
         float rvo_x = msg->twist[i].linear.x;
         float rvo_y = msg->twist[i].linear.y;
 
-        if (rvo_x == 0 && rvo_y == 0)
+        if (rvo_x == 0.0f && rvo_y == 0.0f)
         {
             twist.linear.x = 0;
             twist.angular.z = 0;

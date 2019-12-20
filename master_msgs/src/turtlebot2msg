@@ -31,8 +31,8 @@ def global_callback(*args):
 
     for i in range (num_robot):
 
-        index_odom = 2 * i + 1
-        index_uwb = 2 * i + 2
+        index_odom = 2 * i
+        index_uwb = 2 * i + 1
 
         # name
         model_states.name.append("agent"+str(i+1))
