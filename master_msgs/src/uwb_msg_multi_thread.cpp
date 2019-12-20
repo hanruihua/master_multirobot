@@ -8,7 +8,7 @@
 #include "std_msgs/String.h"
 #include "msg_utils.h"
 #include <gazebo_msgs/ModelStates.h>
-#include "master_msg/node_frame2.h"
+#include "master_msgs/node_frame2.h"
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Pose.h>
@@ -35,7 +35,7 @@ ros::Publisher chatter_pub;
 msg_utils transfer_tool;
 
 
-void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
+void subscribe_callback(const master_msgs::node_frame2::ConstPtr& msgInput){
     if(msgInput->role == 2){
         agent_name = "agent" + transfer_tool.int2string(msgInput->id) + "";
 

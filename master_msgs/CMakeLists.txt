@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
   sensor_msgs
+  gazebo_msgs
   message_generation
 )
 
@@ -89,6 +90,7 @@ add_message_files(
    geometry_msgs
    nav_msgs
    sensor_msgs
+   gazebo_msgs
  )
 
 ################################################
@@ -123,7 +125,7 @@ add_message_files(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES multi_robot
-  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs message_runtime   nav_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs message_runtime nav_msgs
   sensor_msgs
 #  DEPENDS system_lib
 )

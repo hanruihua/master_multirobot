@@ -2,7 +2,7 @@
 #include <iostream>
 #include "std_msgs/String.h"
 #include "msg_utils.h"
-#include "master_msg/node_frame2.h"
+#include "master_msgs/node_frame2.h"
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Pose.h>
@@ -39,7 +39,7 @@ ros::CallbackQueue sub_queue10;
 
 
 
-void subscribe_callback(const master_msg::node_frame2::ConstPtr& msgInput){
+void subscribe_callback(const master_msgs::node_frame2::ConstPtr& msgInput){
     if(msgInput->role == 2){
         agent_pose_points.x = msgInput->position.x;
         agent_pose_points.y = msgInput->position.y;
