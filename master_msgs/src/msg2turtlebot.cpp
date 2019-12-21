@@ -1,7 +1,12 @@
 #include "msg2turtlebot.h"
 
+int cout_flag = 0;
+float angular_max = 1.2;
+float pi = 3.1415926;
+
 void rvo_callback(const gazebo_msgs::ModelStates::ConstPtr &msg)
 {
+    cout_flag = 0;
     num_robots = msg->twist.size();
     std::vector<geometry_msgs::Twist> vector_twist;
 
@@ -30,11 +35,13 @@ void rvo_callback(const gazebo_msgs::ModelStates::ConstPtr &msg)
             
             float diff = angle_yaw - angle_vel;
 
-            // twist.angular.z = (diff > 0.02) ? (diff < 3.1415926 ? -0.5 : 0.5) : (diff < );    
-            if (angle_yaw - angle_vel > 0.1)
-                twist.angular.z = diff < 3.1415926 ? -1 : 1;
-            else if (angle_yaw - angle_vel < -0.1)
-                twist.angular.z = diff < -3.1415926 ? -1 : 1;
+            // twist.angular.z = (diff > 0.02) ? (diff < 3.1415926 ? -0.5 : 0.5) : (diff < );  
+            // float angular_vel = fabsf(angular_max * float(diff/pi));
+
+            if (diff > 0.1)
+                twist.angular.z = diff < pi ? - angular_max : angular_max;
+            else if (diff < -0.1)
+                twist.angular.z = diff < -pi ? -angular_max : angular_max;
             else
                 twist.angular.z = 0;
 
@@ -49,7 +56,7 @@ void rvo_callback(const gazebo_msgs::ModelStates::ConstPtr &msg)
         turtlebot_pub[j + 1].publish(vector_twist[j]);
     }
     vector_twist.clear();
-    ROS_INFO("successful publish");
+    ROS_INFO("msg2turtlebot: publish new velocities successfully");
 }
 
 float cal_yaw(geometry_msgs::Quaternion quater)
@@ -82,10 +89,13 @@ int main(int argc, char **argv)
     }
 
     ros::Subscriber sub = n.subscribe("rvo_vel", 1000, rvo_callback);
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(50);
 
     while (ros::ok())
     {
+        cout_flag++;
+        if (cout_flag > 2500)
+            std::cout<<"waiting for message of rvo_vel"<<std::endl;
 
         ros::spinOnce();
         loop_rate.sleep();

@@ -154,9 +154,9 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 #add_executable(uwb_msg_node src/uwb_msg.cpp src/msg_utils.h src/msg_utils.cpp)
-add_executable(uwb_msg_node src/uwb_msg_multi_callback.cpp src/msg_utils.h src/msg_utils.cpp)
-add_dependencies(uwb_msg_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(uwb_msg_node ${catkin_LIBRARIES})
+# add_executable(uwb_msg_node src/uwb_msg_multi_callback.cpp src/msg_utils.h src/msg_utils.cpp)
+# add_dependencies(uwb_msg_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(uwb_msg_node ${catkin_LIBRARIES})
 
 add_executable(msg2turtlebot src/msg2turtlebot.cpp)
 target_link_libraries(msg2turtlebot ${catkin_LIBRARIES})

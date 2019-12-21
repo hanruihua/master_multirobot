@@ -59,6 +59,7 @@ void subscribe_callback(const master_msgs::node_frame2::ConstPtr& msgInput){
 
         //printf("%05x\n",msgInput->id);
         //std::cout << std::hex << msgInput->id << "is added into buffer" << std::endl;
+        
     }
 
 

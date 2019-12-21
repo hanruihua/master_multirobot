@@ -71,7 +71,7 @@ def multi_turtlebot_info():
             list_info_sub.append(message_filters.Subscriber(topic_name_odom, Odometry))
             list_info_sub.append(message_filters.Subscriber(topic_name_uwb, node_frame2))
 
-        ts_info = message_filters.ApproximateTimeSynchronizer(list_info_sub, 100, 2)
+        ts_info = message_filters.ApproximateTimeSynchronizer(list_info_sub, 10, 100)
         ts_info.registerCallback(global_callback)
 
     print("Configure completely, wait filtered messages")
