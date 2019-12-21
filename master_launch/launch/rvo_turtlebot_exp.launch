@@ -1,7 +1,7 @@
 <launch>
 
-    <arg name="init_point" default="3 3 5 3" />
-    <arg name="num_robot" default="2"/>
+    <arg name="init_point" default="3 3 3 5 3 7 5 3 5 5 5 7 7 3 7 5" />
+    <arg name="num_robot" default="8"/>
 
         <!-- <node name="uwb_msg_node" pkg="master_msg" type="uwb_msg_node" args="$(arg num_agent)">
             <remap from="/agent_states" to="/rvo/model_states" />
