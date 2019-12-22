@@ -13,6 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+find_package(gazebo REQUIRED)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -106,7 +108,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES master_multirobot
 #  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+  DEPENDS gazebo_ros
 )
 
 ###########
@@ -124,7 +126,7 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/master_multirobot.cpp
 # )
-
+add_subdirectory(gazebo/plugins)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure

@@ -1,0 +1,15 @@
+uint8 id
+vector3d_t position
+vector3d_t velocity
+float32[8] distances
+vector3d_t imuGyro
+vector3d_t imuAcc
+vector3d_t angle
+float32[4] quaternions
+uint32 systemTime
+uint8 accWorkNormal
+uint8 accIsOnLine
+uint8 gyroWorkNormal
+uint8 gyroIsOnLine
+vector3d_t eop
+float32 supplyVoltage
