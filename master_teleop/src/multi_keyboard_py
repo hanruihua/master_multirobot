@@ -97,7 +97,7 @@ def trans(target, control, acc_for, acc_back):
 
 if __name__=="__main__":    
     rospy.init_node('multiKey')
-    pub = rospy.Publisher('/multiKey/cmd_vel', VelocityID, queue_size = 10)
+    pub = rospy.Publisher('/global/multi_vel', VelocityID, queue_size = 10)
     
     altflag = 0
     mode = '0' # control model 1~9 robot

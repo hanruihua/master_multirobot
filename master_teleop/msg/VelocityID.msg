@@ -1,3 +1,3 @@
-string id
-geometry_msgs/Vector3 linear
-geometry_msgs/Vector3 angular
+std_msgs/Header header
+int64[] id
+geometry_msgs/Twist[] twist
