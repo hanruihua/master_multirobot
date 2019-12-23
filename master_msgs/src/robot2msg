@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+
+import message_filters
+import sys
+import rospy
+from nav_msgs.msg import Odometry
+from master_msgs.msg import global_info
+from master_msgs.msg import node_frame2
+from master_msgs.msg import robot_state
+from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Twist
+from gazebo_msgs.msg import ModelStates
+from gazebo_msgs.msg import WorldState
+
+pub = rospy.Publisher('/global/model_states', ModelStates, queue_size=10)
+num_robot = 0
+seq = 0
+
+def global_callback(*args):
+
+    # world_state = WorldState() 
+    model_states = ModelStates()
+
+    for robot_state in args:
+
+        # name
+        model_states.name.append(robot_state.modelstate.model_name)
+
+        # pose
+        model_states.pose.append(robot_state.modelstate.pose)
+
+        # twist
+        model_states.twist.append(robot_state.modelstate.twist)
+
+    pub.publish(model_states)
+
+    print("publish global model states messages successfully")
+
+def multi_turtlebot_info():
+
+    rospy.init_node('robot2msg', anonymous=True)
+    rate=rospy.Rate(50)
+    list_info_sub = []
+    global num_robot
+
+    if len(sys.argv) < 2:
+        rospy.logerr_once("Please input the number of the slave robot")
+    else:
+        num_robot = int(sys.argv[1])
+
+        for i in range(num_robot):   
+
+            topic_name_robot = "agent"+str(i+1)+"/robot_state"
+            list_info_sub.append(message_filters.Subscriber(topic_name_robot, robot_state))
+
+        ts_info = message_filters.ApproximateTimeSynchronizer(list_info_sub, 10, 100)
+        ts_info.registerCallback(global_callback)
+
+    print("Configure completely, wait filtered messages")
+    rospy.spin()
+
+    while not rospy.is_shutdown():
+        rate.sleep()
+        
+if __name__=='__main__':
+    try:
+        multi_turtlebot_info()
+    except rospy.ROSInterruptException:
+        pass
+
+
+
