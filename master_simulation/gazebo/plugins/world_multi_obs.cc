@@ -6,6 +6,7 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include "gazebo_msgs/ModelStates.h"
+#include "gazebo_msgs/WorldState.h"
 
 namespace gazebo
 {
@@ -44,7 +45,7 @@ namespace gazebo
       this->model->SetAngularVel(ignition::math::Vector3d(0, 0, 0));
     }
 
-    void obstacleCallback(const gazebo_msgs::ModelStates::ConstPtr& message)
+    void obstacleCallback(const gazebo_msgs::WorldState::ConstPtr& message)
     {
       auto name = this->model_name;
       int num = message->name.size();
