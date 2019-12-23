@@ -122,7 +122,7 @@
 
     <node name="rvo_node" pkg="rvo_ros" type="rvo_node">
         <remap from="/rvo/model_states" to="/gazebo/model_states"/>
-        <!-- <!<remap from="/rvo_vel" to="/obstacles_velocity"/>  -->
+        <!<remap from="/rvo_vel" to="/obstacles_velocity"/> 
     </node>
 
     <node name="msg2turtlebot" pkg="master_msgs" type="msg2turtlebot"/>

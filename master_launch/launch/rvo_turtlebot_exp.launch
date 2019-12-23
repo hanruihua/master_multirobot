@@ -3,15 +3,10 @@
     <arg name="init_point" default="3 3 3 5 3 7 5 3 5 5 5 7 7 3 7 5" />
     <arg name="num_robot" default="8"/>
 
-        <!-- <node name="uwb_msg_node" pkg="master_msg" type="uwb_msg_node" args="$(arg num_agent)">
-            <remap from="/agent_states" to="/rvo/model_states" />
-        </node> -->
-        <node name="turtlebot2msg" pkg="master_msgs" type="turtlebot2msg" args="$(arg num_robot)"/>
+        <node name="robot2msg" pkg="master_msgs" type="robot2msg" args="$(arg num_robot)"/>
         <node name="rvo_node" pkg="rvo_ros" type="rvo_node" args="$(arg init_point)">
-            <remap from="/rvo/model_states" to="/turtlebot/model_states" /> 
-            <!-- <remap from="/rvo_vel" to="/obstacles_velocity"/>   -->
+            <remap from="/rvo/model_states" to="/global/model_states" /> 
+            <remap from="/rvo_vel" to="/global/multi_vel"/>  
         </node>
-
-        <node name="msg2turtlebot" pkg="master_msgs" type="msg2turtlebot" />
 
 </launch>

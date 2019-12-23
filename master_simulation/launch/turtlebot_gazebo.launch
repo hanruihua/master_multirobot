@@ -46,11 +46,10 @@
             <param name="publish_frequency" type="double" value="30.0" />
         </node>
 
-        
-
+    
     </group>
 
-    <group ns="agent2">
+    <!-- <group ns="agent2">
 
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
             <arg name="base" value="$(arg base)" />
@@ -63,6 +62,8 @@
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
             <param name="publish_frequency" type="double" value="30.0" />
         </node>
+
+        
     </group>
 
     <group ns="agent3">
@@ -123,7 +124,7 @@
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
             <param name="publish_frequency" type="double" value="30.0" />
         </node>
-    </group>
+    </group> -->
 
 
 </launch>
