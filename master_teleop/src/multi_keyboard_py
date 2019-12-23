@@ -5,7 +5,8 @@ from std_msgs.msg import String
 from geometry_msgs.msg import Twist
 from pynput import mouse
 from pynput import keyboard
-from master_teleop.msg import VelocityID
+from gazebo_msgs.msg import WorldState
+
 msg = """
 Control Your multiple Turtlebots!
 ---------------------------
@@ -22,7 +23,7 @@ alt+num: change the mode to control different robot
 ctrl-C to quit
 """
 
-ID_Robot = ('0', '1', '2','3','4','5','6','7','8','9')
+ID_Robot = ('0', '1', '2','3','4','5','6','7','8','9', '10')
 
 def on_press(key):
     try:
@@ -97,7 +98,7 @@ def trans(target, control, acc_for, acc_back):
 
 if __name__=="__main__":    
     rospy.init_node('multiKey')
-    pub = rospy.Publisher('/multiKey/cmd_vel', VelocityID, queue_size = 10)
+    pub = rospy.Publisher('/key_vel', WorldState, queue_size = 10)
     
     altflag = 0
     mode = '0' # control model 1~9 robot
@@ -117,16 +118,23 @@ if __name__=="__main__":
     listener_key.start() 
     #listener_mouse = mouse.Listener(on_move=on_move, on_click=on_click, on_scroll=on_scroll)
     #listener_mouse.start()
-    vel = VelocityID()
-    rate = rospy.Rate(40)
+    vel = WorldState()
+    twist = Twist()
+
+    vel.name.append('agent0')
+    vel.twist.append(twist)
+
+    rate = rospy.Rate(50)
     print(msg)
     while not rospy.is_shutdown():
         control_speed = trans(target_speed, control_speed, acc_for, acc_back)
         #control_turn = trans(target_turn, control_turn, acc_for, acc_back)
         control_turn = target_turn;
-        vel.id = mode
-        vel.linear.x = control_speed
-        vel.angular.z = control_turn
+
+        vel.name[0] = "agent" + mode
+        vel.twist[0].linear.x = control_speed
+        vel.twist[0].angular.z = control_turn
+        vel.twist[0].linear.z = 1 # to judge whether this is the message from keyboard: non-zero
         pub.publish(vel)
         #print(vel)
         rate.sleep()

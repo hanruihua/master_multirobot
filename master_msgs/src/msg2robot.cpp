@@ -1,14 +1,23 @@
 #include "msg2turtlebot.h"
 
-int cout_flag = 0;
-float angular_max = 1.2;
-float pi = 3.1415926;
-
-void rvo_callback(const gazebo_msgs::ModelStates::ConstPtr &msg)
+void callback(const rvo_ros::rvo_vel::ConstPtr &msg)
 {
-    cout_flag = 0;
+    gazebo_msgs::ModelStates gazebo_model;
     num_robots = msg->twist.size();
-    std::vector<geometry_msgs::Twist> vector_twist;
+
+    if (trans_model == "sim")
+    {
+        for (int i=0; i<num_robots; i++)
+        {
+
+        }
+        geometry_msgs::Twist twist;
+
+
+        gazebo_model.name 
+
+
+    }
 
     for (int i = 0; i < num_robots; i++)
     {
@@ -56,47 +65,26 @@ void rvo_callback(const gazebo_msgs::ModelStates::ConstPtr &msg)
         turtlebot_pub[j + 1].publish(vector_twist[j]);
     }
     vector_twist.clear();
-    ROS_INFO("msg2turtlebot: publish new velocities successfully");
-}
-
-float cal_yaw(geometry_msgs::Quaternion quater)
-{
-    float x = quater.x;
-    float y = quater.y;
-    float z = quater.z;
-    float w = quater.w;
-
-    float raw = std::atan2(2 * (w * z + x * y), 1 - 2 * (pow(z, 2) + pow(y, 2)));
-    return raw;
+    ROS_INFO("msg2robot: publish new velocities successfully, current model:");
 }
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "msg2turtlebot");
+    ros::init(argc, argv, "msg2robot");
+
+    if (argc > 1)
+        trans_model = argv[1];
+
     ros::NodeHandle n;
+    ros::Publisher pub_exp = n.advertise<master_msgs::multi_vel>("/global/multi_vel", 100);
+    ros::Publisher pub_sim = n.advertise<gazebo_msgs::ModelStates>("/obstacles_velocity", 100);
 
-    for (int i = 0; i < max_agent; i++)
-    {
-        std::string topic_name;
-        if (i < 10)
-            topic_name = "Slave0" + std::to_string(i) + "/cmd_vel_mux/input/teleop";
-        else
-            topic_name = "Slave" + std::to_string(i) + "/cmd_vel_mux/input/teleop";
+    ros::Subscriber sub = n.subscribe("/rvo_vel", 1000, callback);
 
-        ros::Publisher pub = n.advertise<geometry_msgs::Twist>(topic_name, 1000);
-
-        turtlebot_pub.push_back(pub);
-    }
-
-    ros::Subscriber sub = n.subscribe("rvo_vel", 1000, rvo_callback);
     ros::Rate loop_rate(50);
 
     while (ros::ok())
     {
-        cout_flag++;
-        if (cout_flag > 2500)
-            std::cout<<"waiting for message of rvo_vel"<<std::endl;
-
         ros::spinOnce();
         loop_rate.sleep();
     }

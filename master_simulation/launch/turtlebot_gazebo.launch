@@ -23,6 +23,8 @@
     <arg name="robot5" value="agent5" />
     <arg name="robot6" value="agent6" />
 
+    <arg name="robot_id" value="1" />
+
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="use_sim_time" value="true" />
         <arg name="debug" value="false" />
@@ -31,7 +33,7 @@
         <arg name="verbose" value="true" />
     </include>
 
-    <group ns="Slave01">
+    <group ns="agent1">
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
             <arg name="base" value="$(arg base)" />
             <arg name="stacks" value="$(arg stacks)" />
@@ -43,9 +45,11 @@
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
             <param name="publish_frequency" type="double" value="30.0" />
         </node>
+
+    
     </group>
 
-    <group ns="Slave02">
+    <!-- <group ns="agent2">
 
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
             <arg name="base" value="$(arg base)" />
@@ -58,9 +62,11 @@
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
             <param name="publish_frequency" type="double" value="30.0" />
         </node>
+
+        
     </group>
 
-    <group ns="Slave03">
+    <group ns="agent3">
 
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
             <arg name="base" value="$(arg base)" />
@@ -75,7 +81,7 @@
         </node>
     </group>
 
-    <group ns="Slave04">
+    <group ns="agent4">
 
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
             <arg name="base" value="$(arg base)" />
@@ -90,7 +96,7 @@
         </node>
     </group>
 
-    <group ns="Slave05">
+    <group ns="agent5">
 
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
             <arg name="base" value="$(arg base)" />
@@ -105,7 +111,7 @@
         </node>
     </group>
 
-    <group ns="Slave06">
+    <group ns="agent6">
 
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
             <arg name="base" value="$(arg base)" />
@@ -118,13 +124,7 @@
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
             <param name="publish_frequency" type="double" value="30.0" />
         </node>
-    </group>
+    </group> -->
 
-    <node name="rvo_node" pkg="rvo_ros" type="rvo_node">
-        <remap from="/rvo/model_states" to="/gazebo/model_states"/>
-        <!<remap from="/rvo_vel" to="/obstacles_velocity"/> 
-    </node>
-
-    <node name="msg2turtlebot" pkg="master_msgs" type="msg2turtlebot"/>
 
 </launch>

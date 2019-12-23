@@ -67,6 +67,8 @@ add_message_files(
   node2_t.msg
   node_frame2.msg
   global_info.msg
+  multi_vel.msg
+  robot_state.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -158,8 +160,9 @@ include_directories(
 # add_dependencies(uwb_msg_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 # target_link_libraries(uwb_msg_node ${catkin_LIBRARIES})
 
-add_executable(msg2turtlebot src/msg2turtlebot.cpp)
-target_link_libraries(msg2turtlebot ${catkin_LIBRARIES})
+# add_executable(msg2robo src/msg2robot.cpp)
+# target_link_libraries(msg2robot ${catkin_LIBRARIES})
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

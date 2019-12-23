@@ -1,0 +1,8 @@
+<launch>
+
+<node name='master_keyboard' pkg='master_teleop' type='multi_keyboard_py'>
+    <remap from="/key_vel" to="/global/multi_vel"/>
+
+</node>
+
+</launch>
