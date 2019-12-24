@@ -22,7 +22,7 @@ keyboard control:
 
 build
 > cd ~/catkin_ws/src  
-> git clone https://github.com/hanruihua/master_multirobot.git --recursive 
+> git clone https://github.com/hanruihua/master_multirobot.git --recursive   
 > cd ~/catkin_ws  
 > catkin_make  
 
