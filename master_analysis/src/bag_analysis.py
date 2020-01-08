@@ -2,6 +2,7 @@ import rosbag
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import interpolate 
+import data_smooth
 
 bag = rosbag.Bag("/home/han/catkin_ws/src/master_multirobot/master_analysis/bag/10_robot_2257.bag")
 
@@ -56,6 +57,8 @@ agent1_odom_y_new = agent1_odom_y + diff_y
 
 # agent1_uwb_x_new = agent1_uwb_x
 # agent1_uwb_y_new = interpolate.splev(agent1_uwb_x_new, der=0)
+
+
 
 plt.plot(agent1_uwb_x, agent1_uwb_y, agent1_odom_x_new, agent1_odom_y_new, agent1_ground_x, agent1_ground_y)
 plt.legend()
