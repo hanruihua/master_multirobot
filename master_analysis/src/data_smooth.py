@@ -1,6 +1,7 @@
-import numpy
+import numpy as np
+from scipy.ndimage import gaussian_filter1d
 
-def smooth(x, window_len=11, window='hanning'):
+def convolution_window(x, window_len=11, window='hanning'):
 
     #  """smooth the data using a window with requested size.
     
@@ -39,21 +40,37 @@ def smooth(x, window_len=11, window='hanning'):
     if x.size < window_len:
         raise ValueError("Input vector needs to be bigger than window size.")
 
-
     if window_len<3:
         return x
-
 
     if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
         raise ValueError("Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
 
-
-    s=numpy.r_[x[window_len-1:0:-1],x,x[-2:-window_len-1:-1]]
+    s=np.r_[x[window_len-1:0:-1],x,x[-2:-window_len-1:-1]]
     #print(len(s))
     if window == 'flat': #moving average
-        w=numpy.ones(window_len,'d')
+        w=np.ones(window_len,'d')
     else:
-        w=eval('numpy.'+window+'(window_len)')
+        w=eval('np.'+window+'(window_len)')
 
-    y=numpy.convolve(w/w.sum(),s,mode='valid')
+    y=np.convolve(w/w.sum(),s,mode='valid')
     return y
+
+
+def smooth_curve2d(xp, yp):
+
+    #delete the duplicated value
+    okay = np.where(np.abs(np.diff(xp)) + np.abs(np.diff(yp)) > 0)
+    xp = np.r_[xp[okay], xp[-1]]
+    yp = np.r_[yp[okay], yp[-1]]
+
+    # cut off the weird part
+    jump = np.sqrt(np.diff(xp)**2 + np.diff(yp)**2) 
+    smooth_jump = gaussian_filter1d(jump, 5, mode='wrap') 
+    limit = 2* np.median(smooth_jump)
+
+    xn, yn = xp[:-1], yp[:-1]
+    xn = xn[(jump > 0) & (smooth_jump < limit)]
+    yn = yn[(jump > 0) & (smooth_jump < limit)]
+
+    return xn, yn
