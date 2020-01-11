@@ -11,7 +11,6 @@ bag_static = rosbag.Bag("/home/han/catkin_ws/src/master_multirobot/record/static
 
 topic_agent1 = ['/agent1/ground_pose', '/agent1/nlink_linktrack_nodeframe2', '/agent1/odom'] # ground uwb odom
 
-
 def process_msg(bag_name, topic_name_list, agent_name):
     bag_msg = bag_name.read_messages(topics=topic_name_list)
 
@@ -30,7 +29,6 @@ def process_msg(bag_name, topic_name_list, agent_name):
         if (topic == topic_name_list[2]):
             odom.append([msg.pose.pose.position.x, msg.pose.pose.position.x])
             
-
     ground = np.array(ground)
     uwb = np.array(uwb)
     odom = np.array(odom)
@@ -53,8 +51,8 @@ line_len = 20
 
 def init():  # only required for blitting to give a clean slate.
 
-    ax.set_ylim(-1, 10)
-    ax.set_xlim(-1, 10)
+    ax.set_ylim(0, 10)
+    ax.set_xlim(0, 10)
     
     return [line_uwb, point_uwb]
 
