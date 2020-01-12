@@ -9,11 +9,21 @@ import rospy
 from gazebo_msgs.msg import ModelStates
 import matplotlib.pyplot as plt
 import threading
+from master_msgs.msg import node_frame2
 
-fig, ax = plt.subplots()
-num_agent = 10
+# fig, ax = plt.subplots(2, 2)
+# ax = plt.subplot(2, 1, 2)
 
-anp = animate_path(fig, ax, num_agent, keep = True)
+fig, axs = plt.subplots(2,2)
+
+ax_agents = plt.subplot(221)
+ax_agent = plt.subplot(222)
+ax_dis_anchor = plt.subplot(212)
+
+anp_agents = animate_path(fig, ax_agents, 10)
+anp_agent = animate_path(fig, ax_agent, 1)
+anp_dis_anchor = animate_path(fig, ax_dis_anchor, 4, mode='1d', name ='agent1')
+
 
 def callback(data):
 
@@ -30,23 +40,54 @@ def callback(data):
 
         coordinate_list.append([x, y])
 
-    anp.update_coordinate(coordinate_list)
+    anp_agents.update_coordinate(coordinate_list)
+    anp_agent.update_coordinate(coordinate_list)
 
-    # print(coordinate_list)
+def uwb_callback(data):
+
+    data_list = []
+
+    for node in data.nodes:
+        data_list.append(node.distance)
+
+    if len(data_list) == 4:
+        anp_dis_anchor.update_data_1d(data_list)
 
 def path_plot():
 
     rospy.init_node('rt_path_node')
     rospy.Subscriber('/global/model_states', ModelStates, callback)
+    rospy.Subscriber('/agent1/nlink_linktrack_nodeframe2', node_frame2, uwb_callback)
+    
+    anp_agents.ani_plot()
+    anp_agent.ani_plot()
+    anp_dis_anchor.ani_plot()
 
+    plt.show()
 
 def spin_callback():
     rospy.spin()
+    
+# def plot_sub():
+#     anp_1.ani_plot()
 
 if __name__ == "__main__":
 
-    path_plot()  
     thread_callback = threading.Thread(target = spin_callback, name='ros_callback', daemon=True)
+    path_plot()
     thread_callback.start()
-    anp.ani_plot()
-   
+
+    
+    
+
+    
+     
+
+    
+
+    # thread_subplot = threading.Thread(target = plot_sub, name='subplot', daemon=True)
+    # thread_subplot.start()
+
+    
+    
+    

@@ -90,12 +90,12 @@ def plot_dis_list(agent_dis, name):
         x_arrange = np.arange(len(distance))
         distance = np.array(distance)
 
-        distance_smooth = convolution_window(distance, 30)
-        agent_dis_smooth.append(distance_smooth)
-        x_arrange_smooth = np.arange(len(distance_smooth))
+        # distance_smooth = convolution_window(distance, 1)
+        # agent_dis_smooth.append(distance_smooth)
+        # x_arrange_smooth = np.arange(len(distance_smooth))
 
         plt.plot(x_arrange,distance, label=name)
-        plt.plot(x_arrange_smooth, distance_smooth, label='smooth_'+name)
+        # plt.plot(x_arrange_smooth, distance_smooth, label='smooth_'+name)
     
     # np.save(name, np.array(agent_dis))
     # np.save(name+'smooth', np.array(agent_dis_smooth))
