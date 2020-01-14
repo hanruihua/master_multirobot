@@ -111,36 +111,28 @@ from matplotlib import animation
 # rand = Animate('Torque')
 # rand.start()
 
+from scipy.fftpack import fft
 import matplotlib.pyplot as plt
-import numpy as np
-import matplotlib.animation as animation
 
-class some():
-    def __init__(self):
-        self.fig = plt.figure()
-        self.ax = self.fig.add_subplot(111)
-        self.line,  = self.ax.plot([],[], color="red", linestyle="-")
-        self.scat, = self.ax.plot([],[], color="orange", marker="s", linestyle="")
+Fs =1000      # 采样频率
+f1 =390       # 信号频率1
+f2 = 2e3      # 信号频率2
+t=np.linspace(0,1,Fs)   # 生成 1s 的实践序列   
+noise1 = np.random.random(1000)      # 0-1 之间的随机噪声
+noise2 = np.random.normal(1,10,1000)
+#产生的是一个10e3的高斯噪声点数组集合（均值为：1，标准差：10）
+y=2*np.sin(2*np.pi*f1*t)+5*np.sin(2*np.pi*f2*t)+noise2
 
-        self.data = np.random.rand(1000)
-        self.times = np.arange(1000)
+def FFT (Fs,data):
+    L = len (data)                        # 信号长度
+    N =int(np.power(2,np.ceil(np.log2(L))))    # 下一个最近二次幂
+    FFT_y1 = np.abs(fft(data,N))/L*2      # N点FFT 变化,但处于信号长度  
+    Fre = np.arange(int(N/2))*Fs/N        # 频率坐标
+    FFT_y1 = FFT_y1[range(int(N/2))]      # 取一半
+    return Fre, FFT_y1
 
-        self.stepsize = 10
-        self.showntimes = np.arange(self.stepsize)
-        self.ax.set_ylim([0,1])
-        self.ax.set_xlim([self.showntimes[0],self.showntimes[-1]])
-
-        self.ani = animation.FuncAnimation(self.fig, self._upd_plot, blit=False, interval=60, repeat=False)
-        plt.show()
-
-    def _upd_plot(self,i):
-        print (i)
-        if i < len(self.data)-self.stepsize:
-            self.scat.set_data(self.showntimes, self.data[i:i+self.stepsize])
-            self.line.set_data(self.showntimes, self.data[i:i+self.stepsize].mean()*np.ones(len(self.showntimes)) )
-            self.ax.set_xticklabels(self.times[i:i+self.stepsize])
-        else:
-            self.ani.event_source.stop()
-
-if __name__ == '__main__':
-    s = some()
+Fre, FFT_y1 = FFT(Fs,y)
+plt.figure
+plt.plot(Fre,FFT_y1)
+plt.grid()
+plt.show()

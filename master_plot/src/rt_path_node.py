@@ -21,9 +21,8 @@ ax_agent = plt.subplot(222)
 ax_dis_anchor = plt.subplot(212)
 
 anp_agents = animate_path(fig, ax_agents, 10)
-anp_agent = animate_path(fig, ax_agent, 1)
-anp_dis_anchor = animate_path(fig, ax_dis_anchor, 4, mode='1d', name ='agent1')
-
+anp_agent = animate_path(fig, ax_agent, 1, keep=True)
+anp_dis_anchor = animate_path(fig, ax_dis_anchor, 4, mode='1d', name ='agent1toAnchor', ylim = [4, 12])
 
 def callback(data):
 
@@ -49,6 +48,7 @@ def uwb_callback(data):
 
     for node in data.nodes:
         data_list.append(node.distance)
+        # data_list.append(node.fpRssi)
 
     if len(data_list) == 4:
         anp_dis_anchor.update_data_1d(data_list)
@@ -76,15 +76,7 @@ if __name__ == "__main__":
     thread_callback = threading.Thread(target = spin_callback, name='ros_callback', daemon=True)
     path_plot()
     thread_callback.start()
-
     
-    
-
-    
-     
-
-    
-
     # thread_subplot = threading.Thread(target = plot_sub, name='subplot', daemon=True)
     # thread_subplot.start()
 

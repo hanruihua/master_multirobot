@@ -1,144 +1,58 @@
-import rosbag
-import matplotlib.pyplot as plt
+import sys
+sys.path.append('../')
+sys.path.append('master_analysis')
+
 import numpy as np
-from scipy import interpolate 
-import time
-from scipy.ndimage import gaussian_filter1d
-from tempfile import TemporaryFile
+import matplotlib.pyplot as plt
+from analysis_lib.bag_analysis_class import bag_analysis
+from analysis_lib.data_smooth import smooth_data
+from numpy.fft import fft
 
-def convolution_window(x, window_len=11, window='hanning'):
+Fs = 2000
+f1 = 50   # signal frequency
+f2 = 100  # human frequency
 
-    #  """smooth the data using a window with requested size.
-    
-    # This method is based on the convolution of a scaled window with the signal.
-    # The signal is prepared by introducing reflected copies of the signal 
-    # (with the window size) in both ends so that transient parts are minimized
-    # in the begining and end part of the output signal.
-    
-    # input:
-    #     x: the input signal 
-    #     window_len: the dimension of the smoothing window; should be an odd integer
-    #     window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
-    #         flat window will produce a moving average smoothing.
+offset = 1
 
-    # output:
-    #     the smoothed signal
-        
-    # example:
+def main():
+    fig, ax = plt.subplots(2, 2)
+    smooth_len = 30
 
-    # t=linspace(-2,2,0.1)
-    # x=sin(t)+randn(len(t))*0.1
-    # y=smooth(x)
-    
-    # see also: 
-    
-    # numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
-    # scipy.signal.lfilter
- 
-    # TODO: the window parameter could be the window itself if an array instead of a string
-    # NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
-    # """
+    bag_static = bag_analysis('/home/han/catkin_ws/src/master_multirobot/master_analysis/bag_ign/static2020-01-08-17-45-20.bag')
+    bag_dyna = bag_analysis('/home/han/catkin_ws/src/master_multirobot/master_analysis/bag_ign/dyna_2020-01-08-17-47-22.bag')
+    bag_10agent = bag_analysis('/home/han/catkin_ws/src/master_multirobot/master_analysis/bag_ign/10_robot_2257.bag')
 
-    if x.ndim != 1:
-        raise ValueError("smooth only accepts 1 dimension arrays.")
+    bag_ref = bag_dyna
 
-    if x.size < window_len:
-        raise ValueError("Input vector needs to be bigger than window size.")
+    agent1_dis = bag_ref.read_anchor_dis('/agent1/nlink_linktrack_nodeframe2')
 
-    if window_len<3:
-        return x
+    agent1_x, agent1_y = bag_ref.read_location('/agent1/nlink_linktrack_nodeframe2')
 
-    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
-        raise ValueError("Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
+    dis_diff = np.diff(agent1_dis[3])
+    # print(dis_diff, 3)
+    # print('next')
+    # print(agent1_dis[3][600:700])
+    # print('next')
+    # print(agent1_x[600:750])
 
-    s=np.r_[x[window_len-1:0:-1],x,x[-2:-window_len-1:-1]]
-    print()
-    # s = x
-    #print(len(s))
-    if window == 'flat': #moving average
-        w=np.ones(window_len,'d')
-    else:
-        w=eval('np.'+window+'(window_len)')
+    agent1_dis_smooth = []
+    smooth_data_diff = []
 
-    y=np.convolve(w/w.sum(),s,mode='valid')
-    return y
+    for agent1_dis_anchor in agent1_dis:
+        agent1_smooth = smooth_data(agent1_dis_anchor)
+        smooth_data_temp = agent1_smooth.convolution_window_1d(smooth_len)
+        agent1_dis_smooth.append(smooth_data_temp)
+        smooth_data_diff.append(np.diff(smooth_data_temp, offset))
 
+    bag_ref.update_smooth_data(agent1_dis_smooth)
+    bag_ref.dis_plot(ax[0][0], '1', if_raw = True, if_smooth = True, window_len = smooth_len)
+    bag_ref.location_plot(ax[0][1], '1', [0,10,0,10])
+    bag_ref.plot_1d(ax[1][0], 'diff', smooth_data_diff, offset)
 
-def smooth_curve2d(xp, yp):
+    plt.show()
 
-    #delete the duplicated value
-    okay = np.where(np.abs(np.diff(xp)) + np.abs(np.diff(yp)) > 0)
-    xp = np.r_[xp[okay], xp[-1]]
-    yp = np.r_[yp[okay], yp[-1]]
+if __name__ == '__main__':
+    main()
 
-    # cut off the weird part
-    jump = np.sqrt(np.diff(xp)**2 + np.diff(yp)**2) 
-    smooth_jump = gaussian_filter1d(jump, 5, mode='wrap') 
-    limit = 2* np.median(smooth_jump)
-
-    xn, yn = xp[:-1], yp[:-1]
-    xn = xn[(jump > 0) & (smooth_jump < limit)]
-    yn = yn[(jump > 0) & (smooth_jump < limit)]
-
-    return xn, yn
-
-def plot_dis_list(agent_dis, name):
-
-    agent_dis_smooth = []
-    for distance in agent_dis:
-
-        x_arrange = np.arange(len(distance))
-        distance = np.array(distance)
-
-        # distance_smooth = convolution_window(distance, 1)
-        # agent_dis_smooth.append(distance_smooth)
-        # x_arrange_smooth = np.arange(len(distance_smooth))
-
-        plt.plot(x_arrange,distance, label=name)
-        # plt.plot(x_arrange_smooth, distance_smooth, label='smooth_'+name)
-    
-    # np.save(name, np.array(agent_dis))
-    # np.save(name+'smooth', np.array(agent_dis_smooth))
-
-bag = rosbag.Bag("/home/han/catkin_ws/src/master_multirobot/record/static2020-01-08-17-45-20.bag")
-#bag = rosbag.Bag("/home/han/catkin_ws/src/master_multirobot/record/dyna_2020-01-08-17-47-22.bag")
-
-agent_uwb = bag.read_messages(topics=['/agent1/nlink_linktrack_nodeframe2'])
-    
-agent1_dis = [[] for i in range(4)]
-agent2_dis = [[] for i in range(4)]
-agent3_dis = [[] for i in range(4)]
-agent4_dis = [[] for i in range(4)]
-
-for topic, msg, t in agent_uwb:
-    
-    if (topic == "/agent1/nlink_linktrack_nodeframe2"):
-        for j in range(len(msg.nodes)): 
-           distance = msg.nodes[j].distance
-           agent1_dis[j].append(distance)
-
-    if (topic == "/agent2/nlink_linktrack_nodeframe2"):
-        for j in range(len(msg.nodes)): 
-           distance = msg.nodes[j].distance
-           agent2_dis[j].append(distance)
-
-    if (topic == "/agent3/nlink_linktrack_nodeframe2"):
-        for j in range(len(msg.nodes)): 
-           distance = msg.nodes[j].distance
-           agent3_dis[j].append(distance)
-    
-    if (topic == "/agent4/nlink_linktrack_nodeframe2"):
-        for j in range(len(msg.nodes)): 
-           distance = msg.nodes[j].distance
-           agent4_dis[j].append(distance)
-
-plot_dis_list(agent1_dis, 'agent1_dis')
-plot_dis_list(agent2_dis, 'agent2_dis')
-plot_dis_list(agent3_dis, 'agent3_dis')
-plot_dis_list(agent4_dis, 'agent4_dis')
-
-plt.legend()
-plt.show()
-bag.close()
 
 

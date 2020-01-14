@@ -2,11 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import animation
 
-x_data = [[] for i in range(20)]
-y_data = [[] for i in range(20)]
-
-data_1d_list = [[] for i in range(20)]
-x_arrange = [[] for i in range(20)]
 '''
 parameter: 
     keep: whether keep the past trajectory 
@@ -17,7 +12,7 @@ fmt_list = ['b-', 'g-', 'r-', 'c-', 'm-', 'y-', 'k-', 'w-']
 
 class animate_path:
 
-    def __init__(self, fig, ax, num_agent, name='', keep = False,line_len = 20, window_len = 500, interval=3, mode='2d'):
+    def __init__(self, fig, ax, num_agent, name='', keep = False,line_len = 20, window_len = 500, interval=1, mode='2d', ylim = [4, 12]):
 
         # plt property
         self.fig = fig
@@ -25,12 +20,16 @@ class animate_path:
         self.num_agent = num_agent
 
         if mode=='2d':
-            self.line_list = [self.ax.plot([], [], 'r-')[0] for i in range(self.num_agent)]
-            self.point_list = [self.ax.plot(0, 0, 'ok', markersize=5)[0] for i in range(self.num_agent)]
+            self.line_list = [self.ax.plot([], [], '-', label = name + '{}'.format(i+1))[0] for i in range(self.num_agent)]
+            self.point_list = [self.ax.plot(0, 0, 'o', markersize=5)[0] for i in range(self.num_agent)]
+            self.x_data = [[] for i in range(20)]
+            self.y_data = [[] for i in range(20)]
 
         if mode == '1d':
-            self.line_1d_list =  [self.ax.plot([], [], label= name + 'toAnchor {}'.format(i))[0] for i in range(self.num_agent)]
-        
+            self.line_1d_list =  [self.ax.plot([], [], label= name + '{}'.format(i+1))[0] for i in range(self.num_agent)]
+            self.data_1d_list = [[] for i in range(20)]
+            self.x_arrange = [[] for i in range(20)]
+
         self.interval = interval   # speed
         self.line_len = line_len
         self.window_len = window_len
@@ -42,6 +41,8 @@ class animate_path:
         self.data_1d = [[] for i in range(self.num_agent)]
 
         self.mode = mode
+
+        self.ylim = ylim
 
     def update_coordinate(self, coordinate_list):
         self.coordinate_list = coordinate_list
@@ -58,20 +59,16 @@ class animate_path:
 
         if self.mode == '2d':
             
-            # self.ax.clear()
             self.ax.set_xlim(0, 10)
             self.ax.set_ylim(0, 10)
+            self.ax.legend(loc='upper right')
+            self.ax.grid()
 
         elif self.mode == '1d':     
-            # self.ax.margins(2, 2)
-            # self.ax.set_xlim(0, 1000)
-            self.ax.set_ylim(4, 12, auto=True)
+
+            self.ax.set_ylim(self.ylim[0], self.ylim[1], auto=True)
             self.ax.set_xlim(0, self.window_len)
             self.ax.legend(loc='upper left')
-            # self.ax.autoscale(True)
-            # self.ax.set_ylim(5, 9)
-
-            # return self.line_1d_list
 
     def animate(self, j):
 
@@ -81,14 +78,14 @@ class animate_path:
                 xp = self.coordinate_list[i][0]
                 yp = self.coordinate_list[i][1]
 
-                x_data[i].append(xp)
-                y_data[i].append(yp)
+                self.x_data[i].append(xp)
+                self.y_data[i].append(yp)
 
-                if len(x_data[i]) > self.line_len and self.keep == False:
-                    x_data[i].pop(0)
-                    y_data[i].pop(0)
+                if len(self.x_data[i]) > self.line_len and self.keep == False:
+                    self.x_data[i].pop(0)
+                    self.y_data[i].pop(0)
                          
-                self.line_list[i].set_data(x_data[i], y_data[i])
+                self.line_list[i].set_data(self.x_data[i], self.y_data[i])
                 self.point_list[i].set_data(xp, yp)
 
         elif self.mode == '1d':
@@ -97,23 +94,20 @@ class animate_path:
                 
                 data_one = self.data_1d[i]
 
-                data_1d_list[i].append(data_one)
+                self.data_1d_list[i].append(data_one)
 
-                x_arrange[i].append(j)
+                self.x_arrange[i].append(j)
 
-                if (len(x_arrange) > self.window_len):
-                    x_arrange[i].pop(0)
-                    data_1d_list[i].pop(0)
+                if (len(self.x_arrange) > self.window_len):
+                    self.x_arrange[i].pop(0)
+                    self.data_1d_list[i].pop(0)
 
                 # self.ax.plot(x_arrange[i], data_1d_list[i], 'g-')
                 if (j > self.window_len):
                     self.ax.set_xlim(j - self.window_len + 20 , j + 20)
 
-                self.line_1d_list[i].set_data(x_arrange[i], data_1d_list[i])
+                self.line_1d_list[i].set_data(self.x_arrange[i], self.data_1d_list[i])
 
-            # window_len = np.arange(j, j+1000)
-
-            # self.ax.set_xticklabels(window_len)
                 
 
 
