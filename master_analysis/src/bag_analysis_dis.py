@@ -22,9 +22,9 @@ def main():
     bag_dyna = bag_analysis('/home/han/catkin_ws/src/master_multirobot/master_analysis/bag_ign/dyna_2020-01-08-17-47-22.bag')
     bag_10agent = bag_analysis('/home/han/catkin_ws/src/master_multirobot/master_analysis/bag_ign/10_robot_2257.bag')
 
-    bag_ref = bag_dyna
+    bag_ref = bag_10agent
 
-    agent1_dis = bag_ref.read_anchor_dis('/agent1/nlink_linktrack_nodeframe2')
+    agent1_dis = bag_ref.read_anchor_dis('/agent2/nlink_linktrack_nodeframe2')
 
     agent1_x, agent1_y = bag_ref.read_location('/agent1/nlink_linktrack_nodeframe2')
 
