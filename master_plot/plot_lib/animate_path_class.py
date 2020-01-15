@@ -26,7 +26,7 @@ class animate_path:
             self.y_data = [[] for i in range(20)]
 
         if mode == '1d':
-            self.line_1d_list =  [self.ax.plot([], [], label= name + '{}'.format(i+1))[0] for i in range(self.num_agent)]
+            self.line_1d_list =  [self.ax.plot([], [], label= name + '{}'.format(i))[0] for i in range(self.num_agent)]
             self.data_1d_list = [[] for i in range(20)]
             self.x_arrange = [[] for i in range(20)]
 

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import sys
 sys.path.append('master_plot')
 sys.path.append('../')
@@ -20,9 +21,9 @@ ax_agents = plt.subplot(221)
 ax_agent = plt.subplot(222)
 ax_dis_anchor = plt.subplot(212)
 
-anp_agents = animate_path(fig, ax_agents, 10)
-anp_agent = animate_path(fig, ax_agent, 1, keep=True)
-anp_dis_anchor = animate_path(fig, ax_dis_anchor, 4, mode='1d', name ='agent1toAnchor', ylim = [4, 12])
+anp_agents = animate_path(fig, ax_agents, 3)
+anp_agent = animate_path(fig, ax_agent, 2, keep=True)
+anp_dis_anchor = animate_path(fig, ax_dis_anchor, 5, mode='1d', name ='agent2toAnchor', ylim = [4, 12])
 
 def callback(data):
 
@@ -50,14 +51,14 @@ def uwb_callback(data):
         data_list.append(node.distance)
         # data_list.append(node.fpRssi)
 
-    if len(data_list) == 4:
+    if len(data_list) == 5:
         anp_dis_anchor.update_data_1d(data_list)
 
 def path_plot():
 
     rospy.init_node('rt_path_node')
     rospy.Subscriber('/global/model_states', ModelStates, callback)
-    rospy.Subscriber('/agent1/nlink_linktrack_nodeframe2', node_frame2, uwb_callback)
+    rospy.Subscriber('/agent3/nlink_linktrack_nodeframe2', node_frame2, uwb_callback)
     
     anp_agents.ani_plot()
     anp_agent.ani_plot()
