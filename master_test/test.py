@@ -1,13 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import animation
-# a = np.array([1, 2, 3, 4, 5, 6])
-# b = np.array([1,2])
-# c = np.array([[1,1], [2,2], [3,3]])
+import math
 
-# d = c[b]
+a = [[1, 2 ,3], [1, 2, 3]]
+b = np.average(a, axis = 0) 
+c = [10, 12]
 
-# print(d)
+if c:
+    print('empty')
+
 
 # num_agent = 10
 # fig, ax = plt.subplots()
@@ -111,28 +113,29 @@ from matplotlib import animation
 # rand = Animate('Torque')
 # rand.start()
 
-from scipy.fftpack import fft
-import matplotlib.pyplot as plt
+# from scipy.fftpack import fft
+# import matplotlib.pyplot as plt
 
-Fs =1000      # 采样频率
-f1 =390       # 信号频率1
-f2 = 2e3      # 信号频率2
-t=np.linspace(0,1,Fs)   # 生成 1s 的实践序列   
-noise1 = np.random.random(1000)      # 0-1 之间的随机噪声
-noise2 = np.random.normal(1,10,1000)
-#产生的是一个10e3的高斯噪声点数组集合（均值为：1，标准差：10）
-y=2*np.sin(2*np.pi*f1*t)+5*np.sin(2*np.pi*f2*t)+noise2
+# Fs =1000      # 采样频率
+# f1 =390       # 信号频率1
+# f2 = 2e3      # 信号频率2
+# t=np.linspace(0,1,Fs)   # 生成 1s 的实践序列   
+# noise1 = np.random.random(1000)      # 0-1 之间的随机噪声
+# noise2 = np.random.normal(1,10,1000)
+# #产生的是一个10e3的高斯噪声点数组集合（均值为：1，标准差：10）
+# y=2*np.sin(2*np.pi*f1*t)+5*np.sin(2*np.pi*f2*t)+noise2
 
-def FFT (Fs,data):
-    L = len (data)                        # 信号长度
-    N =int(np.power(2,np.ceil(np.log2(L))))    # 下一个最近二次幂
-    FFT_y1 = np.abs(fft(data,N))/L*2      # N点FFT 变化,但处于信号长度  
-    Fre = np.arange(int(N/2))*Fs/N        # 频率坐标
-    FFT_y1 = FFT_y1[range(int(N/2))]      # 取一半
-    return Fre, FFT_y1
+# def FFT (Fs,data):
+#     L = len (data)                        # 信号长度
+#     N =int(np.power(2,np.ceil(np.log2(L))))    # 下一个最近二次幂
+#     FFT_y1 = np.abs(fft(data,N))/L*2      # N点FFT 变化,但处于信号长度  
+#     Fre = np.arange(int(N/2))*Fs/N        # 频率坐标
+#     FFT_y1 = FFT_y1[range(int(N/2))]      # 取一半
+#     return Fre, FFT_y1
 
-Fre, FFT_y1 = FFT(Fs,y)
-plt.figure
-plt.plot(Fre,FFT_y1)
-plt.grid()
-plt.show()
+# Fre, FFT_y1 = FFT(Fs,y)
+# plt.figure
+# plt.plot(Fre,FFT_y1)
+# plt.grid()
+# plt.show()
+

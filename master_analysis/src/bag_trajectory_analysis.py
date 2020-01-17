@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../')
+
 import rosbag
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,8 +9,8 @@ import data_smooth
 import matplotlib.animation as animation
 
 #bag = rosbag.Bag("/home/han/catkin_ws/src/master_multirobot/master_analysis/bag/10_robot_2257.bag")
-bag_dyna = rosbag.Bag("/home/han/catkin_ws/src/master_multirobot/record/dyna_2020-01-08-17-47-22.bag")
-bag_static = rosbag.Bag("/home/han/catkin_ws/src/master_multirobot/record/static2020-01-08-17-45-20.bag")
+bag_dyna = rosbag.Bag("bag_ign/dyna_2020-01-08-17-47-22.bag")
+bag_static = rosbag.Bag("bag_ign/static2020-01-08-17-45-20.bag")
 
 topic_agent1 = ['/agent1/ground_pose', '/agent1/nlink_linktrack_nodeframe2', '/agent1/odom'] # ground uwb odom
 

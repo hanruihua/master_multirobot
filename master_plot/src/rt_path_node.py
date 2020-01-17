@@ -23,7 +23,7 @@ ax_dis_anchor = plt.subplot(212)
 
 anp_agents = animate_path(fig, ax_agents, 3)
 anp_agent = animate_path(fig, ax_agent, 2, keep=True)
-anp_dis_anchor = animate_path(fig, ax_dis_anchor, 5, mode='1d', name ='agent2toAnchor', ylim = [4, 12])
+anp_dis_anchor = animate_path(fig, ax_dis_anchor, 5, mode='1d', name ='agent2toAnchor', ylim = [-70, -90])
 
 def callback(data):
 
@@ -48,8 +48,8 @@ def uwb_callback(data):
     data_list = []
 
     for node in data.nodes:
-        data_list.append(node.distance)
-        # data_list.append(node.fpRssi)
+        # data_list.append(node.distance)
+        data_list.append(node.fpRssi)
 
     if len(data_list) == 5:
         anp_dis_anchor.update_data_1d(data_list)

@@ -1,10 +1,9 @@
 import sys
 sys.path.append('../')
-sys.path.append('master_analysis')
 
 import numpy as np
 import matplotlib.pyplot as plt
-from analysis_lib.bag_analysis_class import bag_analysis
+from analysis_lib.bag_analysis import bag_analysis
 from analysis_lib.data_smooth import smooth_data
 from numpy.fft import fft
 
@@ -18,9 +17,9 @@ def main():
     fig, ax = plt.subplots(2, 2)
     smooth_len = 30
 
-    bag_static = bag_analysis('/home/han/catkin_ws/src/master_multirobot/master_analysis/bag_ign/static2020-01-08-17-45-20.bag')
-    bag_dyna = bag_analysis('/home/han/catkin_ws/src/master_multirobot/master_analysis/bag_ign/dyna_2020-01-08-17-47-22.bag')
-    bag_10agent = bag_analysis('/home/han/catkin_ws/src/master_multirobot/master_analysis/bag_ign/10_robot_2257.bag')
+    bag_static = bag_analysis('bag_ign/record_20201_15/static2020-01-08-17-45-20.bag')
+    bag_dyna = bag_analysis('bag_ign/dyna_2020-01-08-17-47-22.bag')
+    bag_10agent = bag_analysis('bag_ign/10_robot_2257.bag')
 
     bag_ref = bag_10agent
 
@@ -29,12 +28,7 @@ def main():
     agent1_x, agent1_y = bag_ref.read_location('/agent1/nlink_linktrack_nodeframe2')
 
     dis_diff = np.diff(agent1_dis[3])
-    # print(dis_diff, 3)
-    # print('next')
-    # print(agent1_dis[3][600:700])
-    # print('next')
-    # print(agent1_x[600:750])
-
+    
     agent1_dis_smooth = []
     smooth_data_diff = []
 
