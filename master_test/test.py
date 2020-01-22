@@ -3,12 +3,19 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 import math
 
-a = [[1, 2 ,3], [1, 2, 3]]
-b = np.average(a, axis = 0) 
-c = [10, 12]
+# a = [[1, 2 ,3], [1, 2, 3]]
+# b = np.average(a, axis = 0) 
+# c = [10, 12]
 
-if c:
-    print('empty')
+# if c:
+#     print('empty')
+
+def test_var_args(f_arg, *args):
+    print("first normal arg:", f_arg)
+    for arg in args:
+        print("another arg through *argv:", arg)
+
+test_var_args('yasoob', 'python', 'eggs', 'test')
 
 
 # num_agent = 10
