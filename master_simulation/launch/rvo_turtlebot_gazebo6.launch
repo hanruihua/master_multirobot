@@ -1,5 +1,5 @@
 <launch>
-    <arg name="world_file" default="$(find master_simulation)/gazebo/empty.world" />
+    <arg name="world_file" default="$(find master_simulation)/gazebo/worlds/empty.world" />
     <arg name="base" value="$(optenv TURTLEBOT_BASE kobuki)" /> <!-- create, roomba -->
     <arg name="battery" value="$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)" /> <!-- /proc/acpi/battery/BAT0 -->
     <arg name="paused" value="true" />
@@ -10,11 +10,11 @@
     <!-- <arg name="ROBOT_INITIAL_POSE0" value="-x 0.5 -y 0.5" /> -->
 
     <arg name="ROBOT_INITIAL_POSE1" value="-x 1 -y 1 " />
-    <arg name="ROBOT_INITIAL_POSE2" value="-x 2 -y 1 " />
-    <arg name="ROBOT_INITIAL_POSE3" value="-x 3 -y 1 " />
-    <arg name="ROBOT_INITIAL_POSE4" value="-x 4 -y 1 " />
-    <arg name="ROBOT_INITIAL_POSE5" value="-x 5 -y 1 " />
-    <arg name="ROBOT_INITIAL_POSE6" value="-x 6 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE2" value="-x 3 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE3" value="-x 5 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE4" value="-x 1 -y 5 " />
+    <arg name="ROBOT_INITIAL_POSE5" value="-x 3 -y 5 " />
+    <arg name="ROBOT_INITIAL_POSE6" value="-x 5 -y 5 " />
     <arg name="ROBOT_INITIAL_POSE7" value="-x 7 -y 1 " />
     <arg name="ROBOT_INITIAL_POSE8" value="-x 8 -y 1 " />
     <arg name="ROBOT_INITIAL_POSE9" value="-x 9 -y 1 " />
@@ -30,6 +30,8 @@
     <arg name="robot8" value="agent8" />
     <arg name="robot9" value="agent9" />
     <arg name="robot10" value="agent10" />
+
+    <arg name="goal6" value="1 1 3 1 5 1 1 5 3 5 5 5"/>
 
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="use_sim_time" value="true" />
@@ -142,7 +144,7 @@
 
     </group>
 
-     <group ns="$(arg robot7)">
+     <!-- <group ns="$(arg robot7)">
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
             <arg name="base" value="$(arg base)" />
             <arg name="stacks" value="$(arg stacks)" />
@@ -208,13 +210,7 @@
          
         <node pkg="master_simulation" type="trans2robot" name="trans2robot" args="$(arg robot10)"/>
 
-    </group> 
+    </group>  -->
 
-    <node name="rvo_node" pkg="rvo_ros" type="rvo_node">
-
-        <remap from="/rvo/model_states" to="/gazebo/model_states"/>
-        <remap from="/rvo_vel" to="/global/multi_vel"/> 
-    
-    </node>
 
 </launch>

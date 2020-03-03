@@ -9,8 +9,8 @@
     <arg name="3d_sensor" value="$(optenv TURTLEBOT_3D_SENSOR kinect)" /> <!-- kinect, asus_xtion_pro -->
     <!-- <arg name="ROBOT_INITIAL_POSE0" value="-x 0.5 -y 0.5" /> -->
 
-    <arg name="ROBOT_INITIAL_POSE1" value="-x 1 -y 1 " />
-    <arg name="ROBOT_INITIAL_POSE2" value="-x 4 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE1" value="-x 3 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE2" value="-x 3 -y 4 " />
     <arg name="ROBOT_INITIAL_POSE3" value="-x 4 -y 4 " />
     <arg name="ROBOT_INITIAL_POSE4" value="-x 1 -y 4 " />
     <arg name="ROBOT_INITIAL_POSE5" value="-x 5 -y 1 " />
@@ -65,7 +65,7 @@
 
     </group>
 
-    <group ns="$(arg robot3)">
+    <!-- <group ns="$(arg robot3)">
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
             <arg name="base" value="$(arg base)" />
             <arg name="stacks" value="$(arg stacks)" />
@@ -97,7 +97,7 @@
          
         <node pkg="master_simulation" type="trans2robot" name="trans2robot" args="$(arg robot4)"/>
 
-    </group>
+    </group> -->
 
     <!-- <group ns="$(arg robot5)">
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
@@ -132,9 +132,7 @@
          
         <node pkg="master_simulation" type="trans2robot" name="trans2robot" args="$(arg robot6)"/>
 
-    </group> -->
-
-    
+    </group> -->    
 
     <!-- <group ns="agent3">
 

@@ -1,0 +1,10 @@
+<launch>
+    <arg name="goal4" value="1 1 4 1 4 4 1 4"/>
+    <node name="rvo_node" pkg="rvo_ros" type="rvo_node" args="$(arg goal4)">
+
+        <remap from="/rvo/model_states" to="/gazebo/model_states"/>
+        <remap from="/rvo_vel" to="/global/multi_vel"/> 
+    
+    </node>
+
+</launch>
