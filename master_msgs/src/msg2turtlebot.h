@@ -14,7 +14,7 @@ const int max_agent = 10;
 int num_robots;
 
 int cout_flag = 0;
-float angular_max = 1.2;
+float angular_max = 1.6;
 float pi = 3.1415926;
 
 std::string trans_model = "sim";  // sim or exp
