@@ -1,5 +1,5 @@
 <launch>
-    <arg name="world_file" default="$(find master_simulation)/gazebo/worlds/multi_agents6.world"/>
+    <arg name="world_file" default="$(find master_simulation)/gazebo/worlds/multi_agents11.world"/>
     <arg name="gui" default="true"/>
 
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
