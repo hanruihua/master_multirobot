@@ -12,7 +12,7 @@ fmt_list = ['b-', 'g-', 'r-', 'c-', 'm-', 'y-', 'k-', 'w-']
 
 class animate_path:
 
-    def __init__(self, fig, ax, num_agent, name='', keep = False,line_len = 20, window_len = 500, interval=1, mode='2d', ylim = [4, 12]):
+    def __init__(self, fig, ax, num_agent, name='', keep = False, line_len = 20, window_len = 500, interval=1, mode='2d', ylim = [4, 12]):
 
         # plt property
         self.fig = fig
@@ -47,6 +47,9 @@ class animate_path:
     def update_coordinate(self, coordinate_list):
         self.coordinate_list = coordinate_list
 
+    def update_coordinate_single(self, coordinate, num):
+        self.coordinate_list[num] = coordinate
+
     def update_data_1d(self, data_1d):
         self.data_1d = data_1d
 
@@ -59,8 +62,8 @@ class animate_path:
 
         if self.mode == '2d':
             
-            self.ax.set_xlim(0, 7)
-            self.ax.set_ylim(0, 6)
+            self.ax.set_xlim(0, 10)
+            self.ax.set_ylim(0, 10)
             self.ax.legend(loc='upper right')
             self.ax.grid()
             self.ax.set_xlabel("x [m]")
