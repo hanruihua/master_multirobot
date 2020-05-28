@@ -1,7 +1,7 @@
 # Multiple Robots Master
 The program of multiple robot platform running in master computer
 
-Please run the [Slave program](https://github.com/hanruihua/slave_multirobot) in slave robot
+In the real experiment, please run the [Slave program](https://github.com/hanruihua/slave_multirobot) in slave robot
  
 ## Test Environment
 
@@ -22,20 +22,20 @@ keyboard control:
 
 build
 > cd ~/catkin_ws/src  
-> git clone https://github.com/hanruihua/master_multirobot.git
+> git clone https://github.com/hanruihua/master_multirobot.git  
 > cd ~/catkin_ws  
 > catkin_make  
 
 planning algorithm ORCA:
 
 > cd ~/catkin_ws/src  
-> git clone https://github.com/hanruihua/rvo_ros.git
-> cd ~/catkin_ws  
-> catkin_make 
+> git clone https://github.com/hanruihua/rvo_ros.git  
+> cd ~/catkin_ws    
+> catkin_make   
 
 
 ### Configuration
-Before run the launch file, you should allocate the ROS_MASTER_URI, ROS_HOSTNAME, ROS_IP for this master robot(in .zshrc or .bashrc)
+Before run the launch file for the real experiment, you should allocate the ROS_MASTER_URI, ROS_HOSTNAME, ROS_IP for this master robot(in .zshrc or .bashrc)
 
 template:
 
@@ -53,27 +53,32 @@ example:
 
 ## Run 
 
-**Attention**: All the slave robots and master should connect to the same ros master. 
-               Our system is currently capable to perform collision avoidance and navigation for 10 slave robots at the same time. If you want to control more than 10 robots, you need to add new my_inc0[X].sh file.
-
-keyboard telecontrol  
+### keyboard telecontrol  
 > roslaunch master_teleop multi_keyboard.launch  
 
-simulation   
+### simulation   
 
 - Turtlebot(rvo)  
 > roslaunch master_simulation rvo_turtlebot_gazebo2.launch  
-> roslaunch master_simulation rvo2.launch 
-> rosrun rvo_ros set_goals_client random 0 4 0 4
+> roslaunch master_simulation rvo2.launch   
+> rosrun rvo_ros set_goals_client random 0 4 0 4  
 
 **Note**: the command of the rvo_ros should refer to the [rvo readme](https://github.com/hanruihua/rvo_ros/blob/master/readme.md)
 
+### real experiment
 
-rvo experiment (turtlebot should run the [slave robot program](https://github.com/hanruihua/slave_multirobot.git))  
+rvo real experiment (turtlebot should run the [slave robot program](https://github.com/hanruihua/slave_multirobot.git))  
 > roslaunch master_launch rvo_turtlebot_exp.launch  
 
+**Attention**: All the slave robots and master should connect to the same ros master. 
+               Our system is currently capable to perform collision avoidance and navigation for 10 slave robots at the same time. If you want to control more than 10 robots, you need to add new my_inc0[X].sh file.
 
+## Authors
 
+**Han** - [Han](https://github.com/hanruihua)  
+**Chen** - [Chen](https://github.com/chenshengduo)
 
+## License
 
+This project is licensed under the MIT License
 
