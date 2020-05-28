@@ -22,9 +22,16 @@ keyboard control:
 
 build
 > cd ~/catkin_ws/src  
-> git clone https://github.com/hanruihua/master_multirobot.git --recursive   
+> git clone https://github.com/hanruihua/master_multirobot.git
 > cd ~/catkin_ws  
 > catkin_make  
+
+planning algorithm ORCA:
+
+> cd ~/catkin_ws/src  
+> git clone https://github.com/hanruihua/rvo_ros.git
+> cd ~/catkin_ws  
+> catkin_make 
 
 
 ### Configuration
@@ -52,13 +59,15 @@ example:
 keyboard telecontrol  
 > roslaunch master_teleop multi_keyboard.launch  
 
-simulation  
+simulation   
 
-- omnidirectional(rvo)  
-> roslaunch master_simulation rvo_agent_gazebo.launch  
+- Turtlebot(rvo)  
+> roslaunch master_simulation rvo_turtlebot_gazebo2.launch  
+> roslaunch master_simulation rvo2.launch 
+> rosrun rvo_ros set_goals_client random 0 4 0 4
 
-- differential(rvo)  
-> roslaunch master_simulation rvo_turtlebot_gazebo.launch  
+**Note**: the command of the rvo_ros should refer to the [rvo readme](https://github.com/hanruihua/rvo_ros/blob/master/readme.md)
+
 
 rvo experiment (turtlebot should run the [slave robot program](https://github.com/hanruihua/slave_multirobot.git))  
 > roslaunch master_launch rvo_turtlebot_exp.launch  
