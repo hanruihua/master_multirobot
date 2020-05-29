@@ -1,12 +1,8 @@
 <launch>
 
-    <arg name="init_point" default="4 7
-                                    4 6
-                                    4 5
-                                    4 4
-                                    4 3
-                                    4 2
-                                    4 1 5 1 6 1 7 1 8 1"/>
+    <arg name="init_point" default="5 6 5 7 3 7 3 4 3 6 3 5 4 5 3 3 5 3 5 4 5 5"/>
+
+    <rosparam command="load" file = "$(find rvo_ros)/configure/config_exp.yaml"/>
 
     <node name="rvo_node" pkg="rvo_ros" type="rvo_node" args="$(arg init_point)">
         <remap from="/rvo/model_states" to="/global/model_states" /> 
