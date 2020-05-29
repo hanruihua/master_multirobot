@@ -48,7 +48,7 @@ def ground_callback(data):
 def path_plot():
 
     rospy.init_node('rt_path_node')
-    rospy.Subscriber('/robot_state', robot_state, ekf_callback)
+    rospy.Subscriber('/agent1/robot_state', robot_state, ekf_callback)
     rospy.Subscriber('/agent1/ground_pose', Pose2D, ground_callback)
     rospy.Subscriber('/agent1/nlink_linktrack_nodeframe2', node_frame2, uwb_callback)
     
