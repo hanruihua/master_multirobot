@@ -1,0 +1,7 @@
+<launch>
+
+    <arg name="num_robot" default="11"/>
+
+    <node name="robot2msg" pkg="master_msgs" type="robot2msg" args="$(arg num_robot)"/>
+
+</launch>
