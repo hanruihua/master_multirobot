@@ -6,23 +6,23 @@ rigid_bodies:
     '1':
         pose: agent1/pose
         pose2d: agent1/ground_pose
-        child_frame_id: agent_1/base_link
+        child_frame_id: agent1/base_link
         parent_frame_id: world
     '2':
         pose: agent2/pose
         pose2d: agent2/ground_pose
-        child_frame_id: agent_2/base_link
+        child_frame_id: agent2/base_link
         parent_frame_id: world
     '3':
-        pose: agent9/pose
-        pose2d: agent9/ground_pose
-        child_frame_id: agent_9/base_link
+        pose: agent3/pose
+        pose2d: agent3/ground_pose
+        child_frame_id: agent3/base_link
         parent_frame_id: world
 
     '4':
-        pose: agent10/pose
-        pose2d: agent10/ground_pose
-        child_frame_id: agent_10/base_link
+        pose: agent4/pose
+        pose2d: agent4/ground_pose
+        child_frame_id: agent4/base_link
         parent_frame_id: world
      
 

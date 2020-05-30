@@ -2,3 +2,8 @@
 *venv
 *.idea
 cmake-build-debug/
+bag_ign/
+*.code-workspace
+*.pyc
+record/
+

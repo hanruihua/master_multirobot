@@ -1,14 +1,12 @@
 <launch>
 
-    <arg name="init_point" default="2 3.5 3.5 5 2 5
-                                    2 6.5 5 2 6.5 2 
-                                    3.5 2 2 2 5 3.5 3.5 3.5"/>
-    <arg name="num_robot" default="10"/>
+    <arg name="init_point" default="5 6 5 7 3 7 3 4 3 6 3 5 4 5 3 3 5 3 5 4 5 5"/>
 
-        <node name="robot2msg" pkg="master_msgs" type="robot2msg" args="$(arg num_robot)"/>
-        <node name="rvo_node" pkg="rvo_ros" type="rvo_node" args="$(arg init_point)">
-            <remap from="/rvo/model_states" to="/global/model_states" /> 
-            <remap from="/rvo_vel" to="/global/multi_vel"/>  
-        </node>
+    <rosparam command="load" file = "$(find master_launch)/config_exp.yaml"/>
+
+    <node name="rvo_node" pkg="rvo_ros" type="rvo_node" args="$(arg init_point)">
+        <remap from="/rvo/model_states" to="/global/model_states" /> 
+        <remap from="/rvo_vel" to="/global/multi_vel"/>  
+    </node>
 
 </launch>

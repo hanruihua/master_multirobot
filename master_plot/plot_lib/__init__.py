@@ -1,0 +1,1 @@
+from plot_lib.animate_path_class import animate_path

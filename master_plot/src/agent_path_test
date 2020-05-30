@@ -1,0 +1,71 @@
+#!/usr/bin/python3
+import sys
+sys.path.append('master_plot')
+sys.path.append('../')
+
+from plot_lib import animate_path
+
+import numpy as np
+import rospy
+from gazebo_msgs.msg import ModelStates
+from geometry_msgs.msg import Pose2D  
+import matplotlib.pyplot as plt
+import threading
+from master_msgs.msg import node_frame2
+from master_msgs.msg import robot_state
+
+fig, axs = plt.subplots(1,1)
+agent = plt.subplot(111) 
+anp_agent = animate_path(fig, agent, 3, keep = True)
+
+
+g2u_rota = np.array([[-0.04425313, 0.99902035], [-0.99902035, -0.04425313]])
+g2u_transi = np.array([[4.41968278], [4.13352817]])
+
+def ekf_callback(data):
+
+    x = data.modelstate.pose.position.x 
+    y = data.modelstate.pose.position.y
+
+    anp_agent.update_coordinate_single([x, y], 0)
+
+def uwb_callback(data):
+
+    x = data.position.x
+    y = data.position.y
+
+    anp_agent.update_coordinate_single([x, y], 1)
+
+def ground_callback(data):
+
+    x = data.x
+    y = data.y
+
+    ground_truth = g2u_rota @ np.array([[x], [y]]) + g2u_transi
+
+    anp_agent.update_coordinate_single(list(ground_truth), 2)
+
+def path_plot():
+
+    rospy.init_node('rt_path_node')
+    rospy.Subscriber('/agent1/robot_state', robot_state, ekf_callback)
+    rospy.Subscriber('/agent1/ground_pose', Pose2D, ground_callback)
+    rospy.Subscriber('/agent1/nlink_linktrack_nodeframe2', node_frame2, uwb_callback)
+    
+    anp_agent.ani_plot()
+
+    plt.show()
+
+def spin_callback():
+    rospy.spin()
+
+if __name__ == "__main__":
+
+    thread_callback = threading.Thread(target = spin_callback, name='ros_callback', daemon=True)
+    path_plot()
+    thread_callback.start()
+    
+
+    
+    
+    
