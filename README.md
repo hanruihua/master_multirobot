@@ -64,7 +64,6 @@ example:
 > rosrun rvo_ros set_goals_client random 0 4 0 4  
 
 **Note**: (1) the command of the rvo_ros should refer to the [rvo readme](https://github.com/hanruihua/rvo_ros/blob/master/readme.md)  
-
           (2) if there is the error like the "unused args [ROBOT_INITIAL_POSE, model]", please replace your kobuki.launch file in the path    turtlebot_simulator/turtlebot_gazebo/launch/includes by the file [kobuki.launch](https://github.com/hanruihua/master_multirobot/blob/master/master_simulation/kobuki.launch.xml)  
 
 
