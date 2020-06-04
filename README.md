@@ -54,7 +54,7 @@ example:
 ## Run 
 
 ### keyboard telecontrol  
-> roslaunch master_teleop multi_keyboard.launch  
+> roslaunch master_teleop master_keyboard.launch --screen 
 
 ### simulation   
 
@@ -63,7 +63,9 @@ example:
 > roslaunch master_simulation rvo2.launch   
 > rosrun rvo_ros set_goals_client random 0 4 0 4  
 
-**Note**: the command of the rvo_ros should refer to the [rvo readme](https://github.com/hanruihua/rvo_ros/blob/master/readme.md)
+**Note**: (1) the command of the rvo_ros should refer to the [rvo readme](https://github.com/hanruihua/rvo_ros/blob/master/readme.md)
+          (2) if there is the error like the "unused args [ROBOT_INITIAL_POSE, model]", please replace your kobuki.launch file in the path    turtlebot_simulator/turtlebot_gazebo/launch/includes by the file kobuki.launch file in path master_multirobot/master_simulation
+
 
 ### real experiment
 
