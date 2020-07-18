@@ -15,9 +15,11 @@ from gazebo_msgs.msg import WorldState
 pub = rospy.Publisher('/global/model_states', ModelStates, queue_size=10)
 num_robot = 0
 seq = 0
+callback_flag = True
 
 def global_callback(*args):
 
+    global callback_flag
     # world_state = WorldState() 
     model_states = ModelStates()
 
@@ -34,20 +36,22 @@ def global_callback(*args):
 
     pub.publish(model_states)
 
-    print("publish global model states messages successfully")
+    # if callback_flag == True:
+    #     print("publish global model states messages successfully")
+    # callback_flag = False
 
 def multi_turtlebot_info():
 
     rospy.init_node('robot2msg', anonymous=True)
-    rate=rospy.Rate(50)
+    # rate=rospy.Rate(50)
     list_info_sub = []
     global num_robot
 
     if len(sys.argv) < 2:
-        rospy.logerr_once("Please input the number of the slave robot")
+        print("Please input the number of the slave robot")
     else:
         num_robot = int(sys.argv[1])
-
+        print("Current robot number: ", num_robot)
         for i in range(num_robot):   
 
             topic_name_robot = "agent"+str(i+1)+"/robot_state"
@@ -56,11 +60,11 @@ def multi_turtlebot_info():
         ts_info = message_filters.ApproximateTimeSynchronizer(list_info_sub, 10, 100)
         ts_info.registerCallback(global_callback)
 
-    print("Configure completely, wait filtered messages")
+    # print("Configure completely, waiting filtered messages")
     rospy.spin()
 
-    while not rospy.is_shutdown():
-        rate.sleep()
+    # while not rospy.is_shutdown():
+    #     rate.sleep()
         
 if __name__=='__main__':
     try:

@@ -23,7 +23,7 @@ alt+num: change the mode to control different robot
 ctrl-C to quit
 """
 
-ID_Robot = ('0', '1', '2','3','4','5','6','7','8','9', 'c', 'b')
+ID_Robot = ('0', '1', '2','3','4','5','6','7','8','9', 'b', 'c', 'd', 'e', 'f', 'g')
 
 def on_press(key):
     try:
@@ -38,10 +38,18 @@ def on_press(key):
         if press == 'a':
             target_turn = 1 * angular
         if altflag == 1 and press in ID_Robot:
-            if press == 'c':
+            if press == 'b':
                 mode = '10'
-            elif press == 'b':
+            elif press == 'c':
                 mode = '11'
+            elif press == 'd':
+                mode = '12'
+            elif press == 'e':
+                mode = '13'
+            elif press == 'f':
+                mode = '14'
+            elif press == 'g':
+                mode = '15'      
             else:
                 mode = str(press)
               

@@ -20,8 +20,9 @@ class animate_path:
         self.num_agent = num_agent
 
         if mode=='2d':
-            self.line_list = [self.ax.plot([], [], '-', label = name + '{}'.format(i+1))[0] for i in range(self.num_agent)]
-            self.point_list = [self.ax.plot(0, 0, 'ok', markersize=5)[0] for i in range(self.num_agent)]
+            self.line_list = [self.ax.plot([], [], '-', linewidth ='4', label = name + '{}'.format(i+1))[0] for i in range(self.num_agent)]
+            self.point_list = [self.ax.plot(0, 0, 'ok', markersize=7)[0] for i in range(self.num_agent)]
+
             self.x_data = [[] for i in range(20)]
             self.y_data = [[] for i in range(20)]
 
@@ -68,6 +69,8 @@ class animate_path:
             self.ax.grid()
             self.ax.set_xlabel("x [m]")
             self.ax.set_ylabel("y [m]")
+            # self.ax.axis('equal')
+        
 
         elif self.mode == '1d':     
 

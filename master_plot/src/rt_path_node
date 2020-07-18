@@ -15,14 +15,21 @@ from master_msgs.msg import node_frame2
 # fig, ax = plt.subplots(2, 2)
 # ax = plt.subplot(2, 1, 2)
 
-fig, axs = plt.subplots(2,2)
+fig, axs = plt.subplots(1,1)
 
-ax_agents = plt.subplot(221)
-ax_agent = plt.subplot(222)
+ax_agents = plt.subplot(111, aspect ='equal')
+# ax_agent = plt.subplot(122, aspect ='equal')
 # ax_dis_anchor = plt.subplot(212)
 
-anp_agents = animate_path(fig, ax_agents, 11)
-anp_agent = animate_path(fig, ax_agent, 11, keep=True)
+if len(sys.argv) < 2:
+    print("no robot number input, default number 4")
+    num_robot = 4
+else:
+    num_robot = int(sys.argv[1])
+    print("Current robot number: ", num_robot)
+
+anp_agents = animate_path(fig, ax_agents, num_robot, line_len = 30)
+# anp_agent = animate_path(fig, ax_agent, num_robot, keep=True)
 # anp_dis_anchor = animate_path(fig, ax_dis_anchor, 5, mode='1d', name ='agent2toAnchor', ylim = [-70, -90])
 
 def callback(data):
@@ -41,7 +48,7 @@ def callback(data):
         coordinate_list.append([x, y])
 
     anp_agents.update_coordinate(coordinate_list)
-    anp_agent.update_coordinate(coordinate_list)
+    # anp_agent.update_coordinate(coordinate_list)
 
 def uwb_callback(data):
 
@@ -58,10 +65,10 @@ def path_plot():
 
     rospy.init_node('rt_path_node')
     rospy.Subscriber('/global/model_states', ModelStates, callback)
-    rospy.Subscriber('/agent3/nlink_linktrack_nodeframe2', node_frame2, uwb_callback)
+    # rospy.Subscriber('/agent3/nlink_linktrack_nodeframe2', node_frame2, uwb_callback)
     
     anp_agents.ani_plot()
-    anp_agent.ani_plot()
+    # anp_agent.ani_plot()
     # anp_dis_anchor.ani_plot()
 
     plt.show()

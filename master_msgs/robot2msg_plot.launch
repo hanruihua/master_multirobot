@@ -1,0 +1,9 @@
+<launch>
+
+    <arg name="num_robot" default="12"/>
+
+    <node name="robot2msg" pkg="master_msgs" type="robot2msg" args="$(arg num_robot)"/>
+
+    <node name="rt_path_node" pkg="master_plot" type="rt_path_node" args="$(arg num_robot)"/>
+    
+</launch>
