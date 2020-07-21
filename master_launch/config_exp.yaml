@@ -2,7 +2,7 @@
 
 # test with 8 robots
 neighborDist: 5
-maxNeighbors: 10
+maxNeighbors: 7
 timeHorizon: 6.5
 timeHorizonObst: 5
 radius: 0.26
