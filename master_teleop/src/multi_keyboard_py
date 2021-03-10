@@ -53,7 +53,8 @@ def on_press(key):
             else:
                 mode = str(press)
               
-	    print('Current model is {0}'.format(mode))
+        print('Current model is {0}'.format(mode))
+
     except AttributeError:
 
         if key == keyboard.Key.alt:
@@ -70,7 +71,7 @@ def on_release(key):
                 if press == 'q' and ranges > 0.1:
                         ranges = ranges - 0.1
                         print('decrease speed to {0}'.format(ranges))
-		if press == 'c' and angular < 1:
+                if press == 'c' and angular < 1:
                         angular = angular + 0.1
                         print('increase angular speed to {0}'.format(angular))
                 if press == 'z' and angular > 0.1:
