@@ -1,0 +1,5 @@
+<launch>
+   
+    <node name="rl_rvo_node" pkg="rl_rvo" type="rl_rvo" >
+    </node>
+</launch>
