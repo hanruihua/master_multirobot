@@ -144,7 +144,7 @@ if __name__=="__main__":
     while not rospy.is_shutdown():
         control_speed = trans(target_speed, control_speed, acc_for, acc_back)
         #control_turn = trans(target_turn, control_turn, acc_for, acc_back)
-        control_turn = target_turn;
+        control_turn = target_turn
 
         vel.name[0] = "agent" + mode
         vel.twist[0].linear.x = control_speed
