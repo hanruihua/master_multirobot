@@ -6,4 +6,5 @@ bag_ign/
 *.code-workspace
 *.pyc
 record/
+.history/
 
