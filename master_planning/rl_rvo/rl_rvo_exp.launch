@@ -1,5 +1,6 @@
 <launch>
    
     <node name="rl_rvo_node" pkg="master_rl_rvo" type="master_rl_rvo" >
+        <remap from="/gazebo/model_states" to="/global/model_states" /> 
     </node>
 </launch>
