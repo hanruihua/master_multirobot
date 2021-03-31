@@ -214,7 +214,7 @@
 
     </group> 
 
-    <group ns="$(arg robot11)">
+    <!-- <group ns="$(arg robot11)">
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
             <arg name="base" value="$(arg base)" />
             <arg name="stacks" value="$(arg stacks)" />
@@ -229,7 +229,7 @@
          
         <node pkg="master_simulation" type="trans2robot" name="trans2robot" args="$(arg robot11)"/>
 
-    </group> 
+    </group>  -->
 
 
 </launch>

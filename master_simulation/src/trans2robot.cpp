@@ -13,7 +13,7 @@
 float cal_yaw(geometry_msgs::Quaternion quater);
 float trans2pi(float angle);
 int cout_flag = 0;
-float angular_max = 1.2;
+float angular_max = 2;
 float pi = 3.1415926;
 float control = 0.0;
 
