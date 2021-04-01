@@ -1,4 +1,4 @@
-from algos import reciprocal_vel_obs
+from reciprocal_vel_obs import reciprocal_vel_obs
 import numpy as np
 from math import sin, cos, atan2, asin, pi, inf
 
