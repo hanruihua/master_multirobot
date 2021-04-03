@@ -39,7 +39,7 @@ def random_start_goal(interval = 1, upper = 8, lower = 0, right=14):
         return start_list, goal_list, start_bear_list
 
 
-def start_goal_list(num_robot=10, mode = 3, interval = 1, upper = 8, lower = 0, right=14, circle_point=[5, 5], radius = 4):
+def start_goal_list(num_robot=10, mode = 3, interval = 1, upper = 8, lower = 0, left=0, right=14, circle_point=[5, 5], radius = 4):
 
     if mode == 2:
         random_list=[]
