@@ -29,7 +29,7 @@ episode_count = 0
 cost_time_list = []
 
 # filename = '/home/han/catkin_ws/src/master_multirobot/master_planning/rl_rvo/project/drl_rvo_nav/ppo_save/result/move10_1/move10.pt'
-filename = os.path.dirname(os.path.realpath(__file__))+'/project/drl_rvo_nav/ppo_save/result/move10_2/move10.pt'
+filename = os.path.dirname(os.path.realpath(__file__))+'/project/drl_rvo_nav/ppo_save/result/tmove10_3/tmove10.pt'
 
 pub=rospy.Publisher('/global/multi_vel', WorldState, queue_size=100)
 
