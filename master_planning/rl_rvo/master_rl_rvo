@@ -29,14 +29,14 @@ episode_count = 0
 cost_time_list = []
 
 # filename = '/home/han/catkin_ws/src/master_multirobot/master_planning/rl_rvo/project/drl_rvo_nav/ppo_save/result/move10_1/move10.pt'
-filename = os.path.dirname(os.path.realpath(__file__))+'/project/drl_rvo_nav/ppo_save/result/tmove10_3/tmove10.pt'
+filename = os.path.dirname(os.path.realpath(__file__))+'/project/drl_rvo_nav/ppo_save/result/move10_5/move10.pt'
 
 pub=rospy.Publisher('/global/multi_vel', WorldState, queue_size=100)
 
 goal_list = []
 
 if mode==3:
-	goal_list1, goal_list2 = start_goal_list(num_robot=num_robot, mode=mode, interval=1.5, upper=8, lower= 0, right=8, circle_point=[5, 5], radius=3)
+	goal_list1, goal_list2 = start_goal_list(num_robot=num_robot, mode=mode, interval=1.5, upper=8, lower= 0, right=8, circle_point=[5, 5], radius=2)
 	goal_list=goal_list1.copy()
 
 elif mode==2:
