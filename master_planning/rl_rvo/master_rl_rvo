@@ -36,7 +36,7 @@ pub=rospy.Publisher('/global/multi_vel', WorldState, queue_size=100)
 goal_list = []
 
 if mode==3:
-	goal_list1, goal_list2 = start_goal_list(num_robot=num_robot, mode=mode, interval=1.5, upper=8, lower= 0, right=8, circle_point=[5, 5], radius=2)
+	goal_list1, goal_list2 = start_goal_list(num_robot=num_robot, mode=mode, interval=1.5, upper=8, lower= 0, right=8, circle_point=[5, 5], radius=3)
 	goal_list=goal_list1.copy()
 
 elif mode==2:
