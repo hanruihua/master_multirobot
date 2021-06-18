@@ -18,9 +18,9 @@ import os
 
 num_robot = 10
 mode = 3 # mode: 3 circle, 2 random
-v_max = 1.5 # max velocity
+v_max = 1 # max velocity
 robot_name_list = ['agent1', 'agent2','agent3','agent4','agent5', 'agent6', 'agent7','agent8','agent9','agent10', 'agent11', 'agent12']
-robot_collision_radius = 0.4
+robot_collision_radius = 0.2
 neighbors_region = 4
 w_max = 2
 episode_num = 30
@@ -36,11 +36,11 @@ pub=rospy.Publisher('/global/multi_vel', WorldState, queue_size=100)
 goal_list = []
 
 if mode==3:
-	goal_list1, goal_list2 = start_goal_list(num_robot=num_robot, mode=mode, interval=1.5, upper=8, lower= 0, right=8, circle_point=[5, 5], radius=3)
+	goal_list1, goal_list2 = start_goal_list(num_robot=num_robot, mode=mode, interval=1.5, upper=8, lower= 0, right=8, circle_point=[5, 5], radius=1.5)
 	goal_list=goal_list1.copy()
 
 elif mode==2:
-	random_list=start_goal_list(num_robot=num_robot, mode=mode, interval=1.5, upper=8, lower= 0, right=8, circle_point=[5, 5], radius=3)
+	random_list=start_goal_list(num_robot=num_robot, mode=mode, interval=1.5, upper=8, lower= 0, right=8, circle_point=[5, 5], radius=1.2)
 	goal_list=random_list
 
 model = torch.load(filename)
@@ -182,9 +182,10 @@ def rl_rvo():
 			obs1 = obs1_list[i]
 			obs = np.concatenate((obs1, rvo_array_flat)) 
 
-			# with torch.no_grad():
-			obs = torch.as_tensor(obs, dtype=torch.float32)
-			action = model.act(obs, std_factor=0.0001)
+			with torch.no_grad():
+				obs = torch.as_tensor(obs, dtype=torch.float32)
+				action = model.act(obs, std_factor=0.000001)
+
 			abs_action = 0.5 * action + np.array([vel_x, vel_y])
 			abs_action = np.clip(abs_action, -v_max, v_max)
 			robot_name = name_list[i]
