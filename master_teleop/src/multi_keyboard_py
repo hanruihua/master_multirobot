@@ -63,24 +63,24 @@ def on_press(key):
             
 def on_release(key):
         global target_speed, target_turn, ranges, altflag, angular
-        if key not in keyboard.Key:
-                press = key.char
-                if press == 'e' and ranges < 1:
-                        ranges = ranges + 0.1
-                        print('increase speed to {0}'.format(ranges))
-                if press == 'q' and ranges > 0.1:
-                        ranges = ranges - 0.1
-                        print('decrease speed to {0}'.format(ranges))
-                if press == 'c' and angular < 1:
-                        angular = angular + 0.1
-                        print('increase angular speed to {0}'.format(angular))
-                if press == 'z' and angular > 0.1:
-                        angular = angular - 0.1  
-                        print('decrease angular speed to {0}'.format(angular))      
-                if press == 'w' or press == 's':
-                        target_speed = 0
-                if press == 'a' or press == 'd':
-                        target_turn = 0
+        if key not in list(keyboard.Key):
+            press = key.char
+            if press == 'e' and ranges < 1:
+                    ranges = ranges + 0.1
+                    print('increase speed to {0}'.format(ranges))
+            if press == 'q' and ranges > 0.1:
+                    ranges = ranges - 0.1
+                    print('decrease speed to {0}'.format(ranges))
+            if press == 'c' and angular < 1:
+                    angular = angular + 0.1
+                    print('increase angular speed to {0}'.format(angular))
+            if press == 'z' and angular > 0.1:
+                    angular = angular - 0.1  
+                    print('decrease angular speed to {0}'.format(angular))      
+            if press == 'w' or press == 's':
+                    target_speed = 0
+            if press == 'a' or press == 'd':
+                    target_turn = 0
         if key == keyboard.Key.alt:
            altflag = 0
 '''
