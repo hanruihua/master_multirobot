@@ -88,7 +88,7 @@ void robotControl_callback(const gazebo_msgs::WorldState::ConstPtr &msgInput)
         else
           angular_z = 0;
 
-          control = speed_smoothy(linear_x, control, 0.05, 0.05);
+          control = speed_smoothy(linear_x, control, 0.1, 0.1);
 
           pub_twist.linear.x = control;
           pub_twist.angular.z = angular_z;

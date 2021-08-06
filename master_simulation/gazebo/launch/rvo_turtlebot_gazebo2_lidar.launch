@@ -1,12 +1,13 @@
 <launch>
     <arg name="world_file" default="$(find master_simulation)/gazebo/worlds/empty.world" />
     <arg name="base" value="$(optenv TURTLEBOT_BASE kobuki)" /> <!-- create, roomba -->
+    <arg name="base_name" value="kobuki_lidar" />
     <arg name="battery" value="$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)" /> <!-- /proc/acpi/battery/BAT0 -->
     <arg name="paused" value="true" />
     <arg name="gui" default="true" />
     <arg name="headless" value="true" />
     <arg name="stacks" value="$(optenv TURTLEBOT_STACKS hexagons)" /> <!-- circles, hexagons -->
-    <arg name="3d_sensor" default="kinect" /> <!-- kinect, asus_xtion_pro -->
+    <arg name="3d_sensor" default="kinect" /> <!-- kinect, asus_xtion_pro-->
     <!-- <arg name="ROBOT_INITIAL_POSE0" value="-x 0.5 -y 0.5" /> -->
 
     <arg name="ROBOT_INITIAL_POSE1" value="-x 3 -y 1 " />
@@ -32,8 +33,9 @@
     </include>
 
     <group ns="$(arg robot1)">
+        
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
-            <arg name="base" value="$(arg base)" />
+            <arg name="base" value="$(arg base_name)" />
             <arg name="stacks" value="$(arg stacks)" />
             <arg name="3d_sensor" value="$(arg 3d_sensor)" />
             <arg name="ROBOT_INITIAL_POSE" value="$(arg ROBOT_INITIAL_POSE1)" />
@@ -42,15 +44,17 @@
 
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
             <param name="publish_frequency" type="double" value="30.0" />
+            <remap from="/scan" to="/needed_topic"/>
         </node>
-         
+        
         <node pkg="master_simulation" type="trans2robot" name="trans2robot" args="$(arg robot1)"/>
-
+        
     </group>
 
     <group ns="$(arg robot2)">
+        
         <include file="$(find turtlebot_gazebo)/launch/includes/$(arg base).launch.xml">
-            <arg name="base" value="$(arg base)" />
+            <arg name="base" value="$(arg base_name)" />
             <arg name="stacks" value="$(arg stacks)" />
             <arg name="3d_sensor" value="$(arg 3d_sensor)" />
             <arg name="ROBOT_INITIAL_POSE" value="$(arg ROBOT_INITIAL_POSE2)" />
