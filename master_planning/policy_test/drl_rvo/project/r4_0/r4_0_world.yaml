@@ -1,0 +1,21 @@
+# world
+world_height: 10
+world_width: 10
+step_time: 0.1
+
+# obstacle
+obstacle_circle_number: 0
+obstacle_circle_list: [[2, 3, 0.2], [4, 5, 0.4]]
+
+# line obstacle
+# obstacle_line_list: [ [2, 2, 5, 3], [5, 2, 5, 6] ] # two point
+# obstacle_line_list: [ [5, 3, 5, 7], [3, 5, 7, 5] ] # two point
+
+# robot
+# robot_number: 10
+robot_mode: 'diff'
+robot_init_state_list: [[1, 1, 0], [2, 2, 1]]
+robot_goal_list: [[5, 5], [7, 7]]
+robot_radius_list: [0.2, 0.2]
+robot_vel_max: [1.5, 1.5]
+radius_exp: 0.1
