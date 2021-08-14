@@ -22,7 +22,7 @@ ax_agents = axs
 # ax_agent = plt.subplot(222)
 # ax_dis_anchor = plt.subplot(212)
 
-anp_agents = animate_path(fig, ax_agents, 8, name="robot", keep = True)
+anp_agents = animate_path(fig, ax_agents, 4, name="robot", keep = True)
 # anp_agent = animate_path(fig, ax_agent, 2, keep=True)
 # anp_dis_anchor = animate_path(fig, ax_dis_anchor, 5, mode='1d', name ='agent2toAnchor', ylim = [-70, -90])
 
