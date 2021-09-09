@@ -21,14 +21,16 @@ from util import cal_yaw, cal_des_vel_omni, init_state_distribute, random_start_
 num_robot = 8
 v_max = 1.0
 robot_name_list = ['agent1', 'agent2','agent3','agent4','agent5', 'agent6', 'agent7','agent8','agent9','agent10', 'agent11', 'agent12']
-collision_radius = 0.2
+collision_radius = 0.3
 
 # envaluate
 episode_count = 0
 episode_num = 50
 cost_time_list = []
 goal_flag = True
-mode = 3
+mode = 5
+envaluate = True
+max_nei_num = 5
 # update info
 robot_state_list = [None] * num_robot
 robot_obs_state_list = [None] * num_robot
@@ -38,14 +40,18 @@ robot_pose_list = [None] * num_robot
 agent_name_list = [None] * num_robot
 
 obs_cir_list = []
+
+# obs_cir_state = np.array([2.5, 4.47, 0, 0, 0.5])
+# obs_cir_list.append(obs_cir_state)
 obs_line_list = []
+obs_line_list = [[0, 0, 0, 8], [0, 8, 5, 8],[5, 8, 5, 0], [5, 0, 0, 0]]
 nei_state_list = []
 
 info = {'rs_l': robot_state_list, 'ros_l': robot_obs_state_list, 'po_l': propri_obs_list,
 'rp_l': robot_pose_list, 'an_l': agent_name_list}
 
 # policy model
-filename = str(Path(__file__).parent / 'project' / 'r8_0' /'r8_0_800.pt')
+filename = str(Path(__file__).parent / 'project' / 'r10_2' /'r10_2_1000.pt')
 model = torch.load(filename)
 model.eval()
 
@@ -53,7 +59,7 @@ model.eval()
 pub=rospy.Publisher('/global/multi_vel', WorldState, queue_size=100)
 
 # goal list
-goal_list1, goal_list2, _ = init_state_distribute(robot_num=num_robot, init_mode=mode, random_bear=True)
+goal_list1, goal_list2, _ = init_state_distribute(robot_num=num_robot, init_mode=mode, random_bear=True, square=[1.0, 1.0, 7.0, 7.0], circular=[5, 5, 4])
 goal_list = goal_list1.copy()
 
 start_time = time.time()
@@ -83,7 +89,7 @@ def callback(data):
             robot_state = np.array([p_x, p_y, vel_x, vel_y, collision_radius, des_vel_x, des_vel_y])
             info['rs_l'][id_agent - 1] = robot_state
 
-            propri_obs = np.array([ vel_x, vel_y, des_vel_x, des_vel_y, cos(yaw), sin(yaw), collision_radius]) 
+            propri_obs = np.array([ vel_x, vel_y, des_vel_x, des_vel_y, yaw, collision_radius]) 
             info['po_l'][id_agent - 1] = propri_obs
 
             info['an_l'][id_agent - 1] = name
@@ -95,9 +101,11 @@ def callback(data):
             else: 
                 arrive_flag = 0
             
+
+
             arrive_flag_list.append(arrive_flag)
     
-    if min(arrive_flag_list):
+    if min(arrive_flag_list) and envaluate:
         print('arrive')
         s_time = time.time()
         cost_time = s_time - start_time
@@ -116,14 +124,14 @@ def callback(data):
             avg_time = np.mean(cost_time_list)
             print('end, average time: ',avg_time)
 
-        if mode == 3:
+        if mode == 3 or 5:
             if goal_flag:
                 goal_list = goal_list1.copy()
             else:
                 goal_list = goal_list2.copy()
 
         if mode == 2:
-            _, goal_list = random_start_goal(num_robot=num_robot, interval=1.5, square=[0, 0, 10, 10])
+            _, goal_list = random_start_goal(robot_num=num_robot, interval=1.0, square=[0.5, 0.5, 9.5, 9.5])
 
 def drl_rvo():
 
@@ -150,8 +158,11 @@ def drl_rvo():
 
             obs_vo_list, _, _, _ = rvo.config_vo_inf(robot_state, info['ros_l'], obs_cir_list, obs_line_list)
 
+            if len(obs_vo_list) > max_nei_num:
+                obs_vo_list = obs_vo_list[-max_nei_num:]
+
             if len(obs_vo_list) == 0:
-                exter_obs = np.zeros(9,)
+                exter_obs = np.zeros(8,)
             else:
                 exter_obs = np.concatenate(obs_vo_list)
             

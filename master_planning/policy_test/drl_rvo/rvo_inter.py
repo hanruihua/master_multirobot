@@ -3,16 +3,21 @@ from math import sqrt, atan2, asin, sin, pi, cos, inf
 import numpy as np
 
 class rvo_inter(reciprocal_vel_obs):
-    def __init__(self, neighbor_region=5, neighbor_num=10, vxmax = 1.5, vymax = 1.5, acceler = 0.5, env_train=True, exp_radius=0.2):
+    def __init__(self, neighbor_region=5, neighbor_num=10, vxmax = 1.5, vymax = 1.5, acceler = 0.5, env_train=True, exp_radius=0.2, ctime_threshold=5, ctime_line_threshold=0.5, obs_mode=0):
         super(rvo_inter, self).__init__(neighbor_region, vxmax, vymax, acceler)
 
         self.env_train = env_train
         self.exp_radius = exp_radius
         self.nm = neighbor_num
+        self.ctime_threshold = ctime_threshold
+        self.ctime_line_threshold = ctime_line_threshold
+        self.obs_mode = obs_mode
 
     def config_vo_inf(self, robot_state, nei_state_list, obs_cir_list, obs_line_list, action=np.zeros((2,)), **kwargs):
         # mode: vo, rvo, hrvo
         robot_state, ns_list, oc_list, ol_list = self.preprocess(robot_state, nei_state_list, obs_cir_list, obs_line_list)
+
+        action = np.squeeze(action)
 
         vo_list1 = list(map(lambda x: self.config_vo_circle2(robot_state, x, action, 'rvo', **kwargs), ns_list))
         vo_list2 = list(map(lambda y: self.config_vo_circle2(robot_state, y,action, 'vo', **kwargs), oc_list))
@@ -26,8 +31,8 @@ class rvo_inter(reciprocal_vel_obs):
 
         for vo_inf in vo_list1 + vo_list2 + vo_list3:
             obs_vo_list.append(vo_inf[0])
-
             if vo_inf[1] is True:
+                # obs_vo_list.append(vo_inf[0])
                 vo_flag = True
                 if vo_inf[2] < min_exp_time:
                     min_exp_time = vo_inf[2]
@@ -36,12 +41,19 @@ class rvo_inter(reciprocal_vel_obs):
 
         # obs_vo_list.sort(reverse=False, key=lambda x: abs(reciprocal_vel_obs.wraptopi(x[2] - x[3])))
         # obs_vo_list.sort(reverse=True, key=lambda x: x[4])
-        obs_vo_list.sort(reverse=True, key=lambda x: x[-3])
+        # obs_vo_list.sort(reverse=True, key=lambda x: x[-3])
+        # obs_vo_list.sort(reverse=True, key=lambda x: x[-2])
+        # obs_vo_list.sort(reverse=True, key=lambda x: x[-1])
+        # obs_vo_list.sort(reverse=True, key=lambda x: x[-1])
+        obs_vo_list.sort(reverse=True, key=lambda x: (-x[-1], x[-2]))
 
         if len(obs_vo_list) > self.nm:
             obs_vo_list_nm = obs_vo_list[-self.nm:]
         else:
             obs_vo_list_nm = obs_vo_list
+
+        if self.nm == 0:
+            obs_vo_list_nm = []
 
         return obs_vo_list_nm, vo_flag, min_exp_time, collision_flag
         
@@ -56,14 +68,18 @@ class rvo_inter(reciprocal_vel_obs):
 
         vo_flag = False
         min_exp_time = inf
-
+        min_dis = inf
         for vo_inf in vo_list1 + vo_list2 + vo_list3:
+
+            if vo_inf[4] < min_dis:
+                min_dis = vo_inf[4]
+
             if vo_inf[1] is True:
                 vo_flag = True
                 if vo_inf[2] < min_exp_time:
                     min_exp_time = vo_inf[2]
 
-        return vo_flag, min_exp_time
+        return vo_flag, min_exp_time, min_dis
 
 
     def config_vo_observe(self, robot_state, nei_state_list, obs_cir_list, obs_line_list):
@@ -119,26 +135,74 @@ class rvo_inter(reciprocal_vel_obs):
             rel_vx = 2*action[0] - mvx - vx
             rel_vy = 2*action[1] - mvy - vy
 
+        # elif mode == 'hrvo':
+        #     rvo_apex = [(vx + mvx)/2, (vy + mvy)/2]
+        #     vo_apex = [mvx, mvy]
+
+        #     cl_vector = [mx - x, my - y]
+
+        #     cur_v = [vx - rvo_apex[0], vy - rvo_apex[1]]
+
+        #     dis_rv = reciprocal_vel_obs.distance(rvo_apex, vo_apex)
+        #     radians_rv = atan2(rvo_apex[1] - vo_apex[1], rvo_apex[0] - vo_apex[0])
+
+        #     diff = line_left_ori - radians_rv
+
+        #     temp =  pi - 2 * half_angle
+
+        #     if temp == 0:
+        #         temp = temp + 0.01
+
+        #     dis_diff = dis_rv * sin(diff) / sin(temp)
+
+        #     if reciprocal_vel_obs.cross_product(cl_vector, cur_v) <= 0: 
+        #         apex = [ rvo_apex[0] - dis_diff * cos(line_right_ori), rvo_apex[1] - dis_diff * sin(line_right_ori) ]    
+        #     else:
+        #         apex = [ vo_apex[0] + dis_diff * cos(line_right_ori), vo_apex[1] + dis_diff * sin(line_right_ori) ]  
+
+        #     rel_vx = action[0] - mvx 
+        #     rel_vy = action[1] - mvy
+
+        #     vo = apex + [line_left_ori, line_right_ori]
+        
         exp_time = inf
 
-        if self.vo_out_jud(action[0], action[1], vo):
+        if self.vo_out_jud_vector(action[0], action[1], vo):
             vo_flag = False
+            exp_time = inf
         else:
-            vo_flag = True
             exp_time = self.cal_exp_tim(rel_x, rel_y, rel_vx, rel_vy, r + mr)
-        
-        input_exp_time = exp_time
-        input_exp_time = 100+real_dis_mr-mr if input_exp_time == inf else input_exp_time
-
+            if exp_time < self.ctime_threshold:
+                vo_flag = True
+            else:
+                vo_flag = False
+                exp_time = inf
+            
+        # input_exp_time = exp_time
+        # input_exp_time = 100+real_dis_mr-mr if input_exp_time == inf else input_exp_time
+        # input_exp_time = 1 / (exp_time+0.2) - (real_dis_mr-mr)
+        # input_exp_time = 0.2 / (exp_time+0.2)
+        input_exp_time = 1 / (exp_time+0.2)
+        min_dis = real_dis_mr-mr
         # vo = vo + [input_exp_time]
         # observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), real_dis_mr-mr, input_exp_time]
-        observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), real_dis_mr-mr, angle_mr, input_exp_time]
+        # observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), real_dis_mr-mr, angle_mr, input_exp_time]
         # observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), real_dis_mr-mr, angle_mr]
-        # observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3])]
+        # observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), real_dis_mr, angle_mr]
+        # observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), real_dis_mr, angle_mr, input_exp_time]
+        if self.obs_mode == 0:
+            observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), min_dis, input_exp_time]
+        elif self.obs_mode == 1:
+            observation_vo = [vo[0], vo[1], vo[2], vo[3], angle_mr, min_dis, input_exp_time]
+        elif self.obs_mode == 2:
+            observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), angle_mr, min_dis]
+
+        # observation_vo = [real_dis_mr, angle_mr, mvx-vx, mvy-vy, r+mr, input_exp_time]
+        # observation_vo = [vo[0], vo[1], vo[2], vo[3], input_exp_time]
         # observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), rel_x, rel_y]
         # observation_vo = vo + [real_dis_mr-mr, input_exp_time]
 
-        return [observation_vo, vo_flag, exp_time, collision_flag]
+        return [observation_vo, vo_flag, exp_time, collision_flag, min_dis]
 
     def config_vo_line2(self, robot_state, line, action, **kwargs):
 
@@ -166,7 +230,10 @@ class rvo_inter(reciprocal_vel_obs):
         vo = apex + [line_left_ori, line_right_ori]
         exp_time = inf
 
-        p2s, p2s_angle = rvo_inter.point2segment(robot_state[0:2], line)
+        temp = robot_state[0:2]
+        temp1 = line
+
+        p2s, p2s_angle = rvo_inter.point2segment(temp, temp1)
 
         env_train = kwargs.get('env_train', self.env_train)
 
@@ -182,19 +249,35 @@ class rvo_inter(reciprocal_vel_obs):
         # else:
         #     collision_flag = False
 
-        if self.vo_out_jud(action[0], action[1], vo):
+        if self.vo_out_jud_vector(action[0], action[1], vo):
             vo_flag = False
         else:
-            vo_flag = True
             exp_time = reciprocal_vel_obs.exp_collision_segment(line, x, y, action[0], action[1], r)
+            if exp_time < self.ctime_line_threshold:
+                vo_flag = True
+            else:
+                vo_flag = False
+                exp_time = inf
 
-        input_exp_time = exp_time
-        input_exp_time = 100+p2s if input_exp_time == inf else input_exp_time
+        # input_exp_time = exp_time
+        # input_exp_time = 100+p2s if input_exp_time == inf else input_exp_time
         # vo = vo + [p2s, input_exp_time]
+        # input_exp_time = 0.2 / (exp_time+0.2)
+        input_exp_time = 1 / (exp_time+0.2)
+        min_dis = p2s
 
-        observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), p2s, p2s_angle, input_exp_time]
+        # observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), p2s, p2s_angle, input_exp_time]
+        if self.obs_mode == 0:
+            observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), min_dis, input_exp_time]
+        elif self.obs_mode == 1:
+            observation_vo = [vo[0], vo[1], vo[2], vo[3], p2s_angle, p2s, input_exp_time]
+        elif self.obs_mode == 2:
+            observation_vo = [vo[0], vo[1], cos(vo[2]), sin(vo[2]), cos(vo[3]), sin(vo[3]), p2s_angle, min_dis]
 
-        return [observation_vo, vo_flag, exp_time, collision_flag]
+        # observation_vo = [p2s, p2s_angle, -vx, -vy, r, input_exp_time]
+        # observation_vo = [vo[0], vo[1], vo[2], vo[3], input_exp_time]
+
+        return [observation_vo, vo_flag, exp_time, collision_flag, min_dis]
 
 
     def vo_out_jud(self, vx, vy, vo):
@@ -202,6 +285,17 @@ class rvo_inter(reciprocal_vel_obs):
         theta = atan2(vy - vo[1], vx - vo[0])
 
         if reciprocal_vel_obs.between_angle(vo[2], vo[3], theta):
+            return False
+        else:
+            return True
+
+    def vo_out_jud_vector(self, vx, vy, vo):
+        
+        rel_vector = [vx - vo[0], vy - vo[1]]
+        line_left_vector = [cos(vo[2]), sin(vo[2]) ]
+        line_right_vector = [cos(vo[3]), sin(vo[3]) ]
+        
+        if reciprocal_vel_obs.between_vector(line_left_vector, line_right_vector, rel_vector):
             return False
         else:
             return True
@@ -216,7 +310,7 @@ class rvo_inter(reciprocal_vel_obs):
         l2 = (ep - sp) @ (ep - sp)
 
         if (l2 == 0.0):
-            return np.linalg.norm(point - sp)
+            return np.linalg.norm(point - sp), 
 
         t = max(0, min(1, ((point-sp) @ (ep-sp)) / l2 ))
 

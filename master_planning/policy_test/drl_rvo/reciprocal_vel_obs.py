@@ -13,7 +13,7 @@ class reciprocal_vel_obs:
         self.vxmax = vxmax
         self.vymax = vymax
         self.acceler = acceler
-        self.neighbor_region = neighbor_region
+        self.nr = neighbor_region
 
     def cal_vel(self, robot_state, nei_state_list=[], obs_cir_list=[], obs_line_list=[], mode = 'rvo'):
         
@@ -28,10 +28,10 @@ class reciprocal_vel_obs:
     def preprocess(self, robot_state, nei_state_list, obs_cir_list, obs_line_list):
         # components in the region 
         robot_state = np.squeeze(robot_state)
-        ns_list = list(filter(lambda x: 0 < reciprocal_vel_obs.distance(robot_state, x) <= self.neighbor_region, nei_state_list))
-        oc_list = list(filter(lambda y: 0 < reciprocal_vel_obs.distance(robot_state, y) <= self.neighbor_region, obs_cir_list))
-        ol_list = list(map(lambda z: reciprocal_vel_obs.segment_in_circle(robot_state[0], robot_state[1], self.neighbor_region, z), obs_line_list))
-        ol_list = [x for x in ol_list if x is not None]
+        ns_list = list(filter(lambda x: 0 < reciprocal_vel_obs.distance(robot_state, x) <= self.nr, nei_state_list))
+        oc_list = list(filter(lambda y: 0 < reciprocal_vel_obs.distance(robot_state, y) <= self.nr, obs_cir_list))
+        ol_list = list(map(lambda z: reciprocal_vel_obs.segment_in_circle(robot_state[0], robot_state[1], self.nr, z), obs_line_list))
+        ol_list = [x for x in ol_list if x is not None]                 
 
         return robot_state, ns_list, oc_list, ol_list
 
@@ -98,7 +98,7 @@ class reciprocal_vel_obs:
 
         x, y, vx, vy, r = robot_state[0:5]
 
-        r = r + 0.2
+        # r = r + 0.2
 
         apex = [0, 0]
 
@@ -134,7 +134,7 @@ class reciprocal_vel_obs:
                 if sqrt(new_vx**2 + new_vy**2) < 0.3:
                     continue
 
-                if self.vo_out(new_vx, new_vy, vo_list):
+                if self.vo_out2(new_vx, new_vy, vo_list):
                     vo_outside.append([new_vx, new_vy])
                 else:
                     vo_inside.append([new_vx, new_vy])
@@ -146,6 +146,17 @@ class reciprocal_vel_obs:
         for rvo in vo_list:
             theta = atan2(vy - rvo[1], vx - rvo[0])
             if reciprocal_vel_obs.between_angle(rvo[2], rvo[3], theta):
+                return False
+    
+        return True
+    
+    def vo_out2(self, vx, vy, vo_list):
+    
+        for rvo in vo_list:
+            line_left_vector = [cos(rvo[2]), sin(rvo[2])]
+            line_right_vector = [cos(rvo[3]), sin(rvo[3])]
+            line_vector = [vx - rvo[0], vy - rvo[1]]
+            if reciprocal_vel_obs.between_vector(line_left_vector, line_right_vector, line_vector):
                 return False
     
         return True
@@ -245,14 +256,14 @@ class reciprocal_vel_obs:
 
         return penalty_vel
     
-    # # judge the direction by vector
-    # @staticmethod
-    # def between_vector(line_left_vector, line_right_vector, line_vector):
+    # judge the direction by vector
+    @staticmethod
+    def between_vector(line_left_vector, line_right_vector, line_vector):
 
-    #     if reciprocal_vel_obs.cross_product(line_left_vector, line_vector) <= 0 and reciprocal_vel_obs.cross_product(line_right_vector, line_vector) >= 0:
-    #         return True
-    #     else:
-    #         return False
+        if reciprocal_vel_obs.cross_product(line_left_vector, line_vector) <= 0 and reciprocal_vel_obs.cross_product(line_right_vector, line_vector) >= 0:
+            return True
+        else:
+            return False
 
     @staticmethod
     def between_angle(line_left_ori, line_right_ori, line_ori):
@@ -261,7 +272,7 @@ class reciprocal_vel_obs:
             return True
         else:
             return False
-            
+
     @staticmethod
     def distance(point1, point2):
         return sqrt( (point2[0] - point1[0]) ** 2 + (point2[1] - point1[1]) ** 2 )
@@ -293,8 +304,8 @@ class reciprocal_vel_obs:
             t1 = ( -b + sqrt(temp) ) / (2 * a)
             t2 = ( -b - sqrt(temp) ) / (2 * a)
 
-            t3 = t1 if t1 > 0 else inf
-            t4 = t2 if t2 > 0 else inf
+            t3 = t1 if t1 >= 0 else inf
+            t4 = t2 if t2 >= 0 else inf
         
             t = min(t3, t4)
 
@@ -343,8 +354,13 @@ class reciprocal_vel_obs:
             else:
                 return None
         
+        diff_norm = np.linalg.norm(segment_point1 - segment_point2)
+
+        if diff_norm == 0:
+            return None
+
         return [segment_point1, segment_point2]
-        
+    
     @staticmethod
     def wraptopi(theta):
 

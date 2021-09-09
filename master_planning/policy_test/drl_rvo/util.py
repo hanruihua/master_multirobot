@@ -51,6 +51,22 @@ def init_state_distribute(robot_num=1, init_mode=1, interval=1, radius=0.2, squa
                 state_list.append(state[:, np.newaxis])
                 goal_list.append(goal[:, np.newaxis])
 
+        elif init_mode == 5:
+
+            half_num = int(num /2)
+
+            state_list1 = [np.array([ [i * interval], [square[1]], [pi/2] ]) for i in range(int(square[0]), int(square[0])+half_num)]
+
+            state_list2 = [np.array([ [i * interval], [square[3]], [pi/2] ]) for i in range(int(square[0]), int(square[0])+half_num)]
+            state_list2.reverse()
+            
+            goal_list1 = [np.array([ [i * interval], [square[3]], [pi/2] ]) for i in range(int(square[0]), int(square[0])+half_num)]
+            goal_list1.reverse()
+
+            goal_list2 = [np.array([ [i * interval], [square[1]], [pi/2] ]) for i in range(int(square[0]), int(square[0])+half_num)]
+            
+            state_list, goal_list = state_list1+state_list2, goal_list1+goal_list2
+
         if random_bear:
             for state in state_list:
                 state[2, 0] = np.random.uniform(low = -pi, high = pi)

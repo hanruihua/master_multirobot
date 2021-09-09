@@ -4,6 +4,7 @@ import numpy as np
 from gym.spaces import Box
 from torch.distributions.normal import Normal
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
+import time
 
 def mlp(sizes, activation, output_activation=nn.Identity):
     layers = []
@@ -14,17 +15,33 @@ def mlp(sizes, activation, output_activation=nn.Identity):
 
     return nn.Sequential(*layers)
 
+def mlp3(sizes, activation=nn.ReLU, output_activation=nn.Identity, drop_p = 0.5):
+
+    layers = []
+    for j in range(len(sizes)-1):
+        if j < len(sizes)-3:
+            act = activation
+            layers += [nn.Linear(sizes[j], sizes[j+1]), nn.Dropout(p=drop_p), act()]
+        else:
+            layers += [nn.Linear(sizes[j], sizes[j+1]), nn.Tanh()] 
+
+    return nn.Sequential(*layers)
+
 class rnn_ac(nn.Module):
 
     def __init__(self, observation_space, action_space, state_dim=5, rnn_input_dim=4, 
     rnn_hidden_dim=64, hidden_sizes_ac=(256, 256), hidden_sizes_v=(16, 16), 
-    activation=nn.ReLU, output_activation=nn.Tanh, output_activation_v= nn.Identity, use_gpu=False, rnn_mode='GRU'):
+    activation=nn.ReLU, output_activation=nn.Tanh, output_activation_v= nn.Identity, use_gpu=False, rnn_mode='GRU', drop_p=0):
         super().__init__()
 
         self.use_gpu = use_gpu
         torch.cuda.synchronize()
         
-        obs_dim = rnn_hidden_dim + state_dim
+        if rnn_mode == 'biGRU':
+            obs_dim = (rnn_hidden_dim + state_dim)
+        elif rnn_mode == 'GRU':
+            obs_dim = (rnn_hidden_dim + state_dim)
+
         rnn = rnn_Reader(state_dim, rnn_input_dim, rnn_hidden_dim, use_gpu=use_gpu, mode=rnn_mode)
 
         # policy builder depends on action space
@@ -33,6 +50,7 @@ class rnn_ac(nn.Module):
 
         # build value function
         self.v = Critic(obs_dim, hidden_sizes_v, activation, output_activation_v, rnn_reader=rnn, use_gpu=use_gpu)
+
 
     def step(self, obs, std_factor=1):
         with torch.no_grad():
@@ -63,13 +81,24 @@ class rnn_Reader(nn.Module):
             self.rnn_net = nn.GRU(input_dim, hidden_dim, batch_first=True)
         elif mode == 'LSTM':
             self.rnn_net = nn.LSTM(input_dim, hidden_dim, batch_first=True)
+        elif mode == 'biGRU':
+            self.rnn_net = nn.GRU(input_dim, hidden_dim, batch_first=True, bidirectional=True)
         
         self.use_gpu=use_gpu
 
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
-        
-        if use_gpu: self.rnn_net = self.rnn_net.cuda()
+
+        des_dim = state_dim + hidden_dim
+        self.ln = nn.LayerNorm(des_dim)
+        # self.dp = nn.Dropout(p=drop_p)
+
+        # self.conv = nn.Conv1d(1, 1, 2, stride=2)
+
+        if use_gpu: 
+            self.rnn_net = self.rnn_net.cuda()
+            self.ln = self.ln.cuda()
+            # self.conv = self.conv.cuda()
 
     def obs_rnn(self, obs):
 
@@ -83,22 +112,42 @@ class rnn_Reader(nn.Module):
         mov_len = int(moving_state.size()[0] / self.input_dim)
         rnn_input = torch.reshape(moving_state, (1, mov_len, self.input_dim))
 
-        if self.mode == 'GRU':
+        if self.mode == 'GRU' or 'biGRU':
             output, hn = self.rnn_net(rnn_input)
         elif self.mode == 'LSTM':
             output, (hn, cn) = self.rnn_net(rnn_input)
     
         hnv = torch.squeeze(hn)
+        # m = nn.Dropout(p=self.drop_p)
+        # obs = m(obs)
+        # hnv = self.dp(hnv)
+
+        if self.mode == 'biGRU':
+            # hnv = torch.reshape(hnv, (self.hidden_dim*2,))
+            hnv = torch.sum(hnv, 0)
+
         rnn_obs = torch.cat((robot_state, hnv))
+
+        # rnn_obs = torch.unsqueeze(rnn_obs, 0)
+
+        rnn_obs = self.ln(rnn_obs)
+
+        # rnn_obs = torch.squeeze(rnn_obs)
+        # rnn_obs = torch.unsqueeze(rnn_obs, 0)
+        # rnn_obs = torch.unsqueeze(rnn_obs, 0)
+
+        # rnn_cnn_obs = self.conv(rnn_obs)
+
+        # rnn_cnn_obs = torch.squeeze(rnn_cnn_obs)
 
         return rnn_obs  
 
     def obs_rnn_list(self, obs_tensor_list):
-
+        
         mov_len = [(len(obs_tensor)-self.state_dim)/self.input_dim for obs_tensor in obs_tensor_list]
         obs_pad = pad_sequence(obs_tensor_list, batch_first = True)
         robot_state_batch = obs_pad[:, :self.state_dim] 
-        
+        batch_size = len(obs_tensor_list)
         if self.use_gpu:
             robot_state_batch=robot_state_batch.cuda()
 
@@ -116,14 +165,25 @@ class rnn_Reader(nn.Module):
             re_mov_pad=re_mov_pad.cuda()
 
         moving_state_pack = pack_padded_sequence(re_mov_pad, mov_len, batch_first=True, enforce_sorted=False)
-
-        if self.mode == 'GRU':
+        
+        if self.mode == 'GRU' or 'biGRU':
             output, hn= self.rnn_net(moving_state_pack)
         elif self.mode == 'LSTM':
             output, (hn, cn) = self.rnn_net(moving_state_pack)
-    
+
         hnv = torch.squeeze(hn)
+
+        if self.mode == 'biGRU':
+            hnv = torch.sum(hnv, 0)
+        # hnv = self.dp(hnv)
         fc_obs_batch = torch.cat((robot_state_batch, hnv), 1)
+
+        fc_obs_batch = self.ln(fc_obs_batch)
+
+        # fc_obs_batch = torch.unsqueeze(fc_obs_batch, 1)
+        # fc_cnn_obs_batch = self.conv(fc_obs_batch)
+
+        # fc_cnn_obs_batch = torch.squeeze(fc_cnn_obs_batch)
 
         return fc_obs_batch
 
@@ -155,10 +215,10 @@ class GaussianActor(Actor):
 
         self.rnn_reader = rnn_reader
         self.use_gpu = use_gpu
-
         self.net_out=mlp([obs_dim] + list(hidden_sizes) + [act_dim], activation, output_activation)
+        # self.net_out=mlp3([obs_dim] + list(hidden_sizes) + [act_dim], activation, output_activation, 0)
 
-        log_std = -np.ones(act_dim, dtype=np.float32)
+        log_std = -1 * np.ones(act_dim, dtype=np.float32)
 
         if use_gpu:
             self.log_std = torch.nn.Parameter(torch.as_tensor(log_std, device=torch.device('cuda')))
@@ -169,17 +229,24 @@ class GaussianActor(Actor):
     def _distribution(self, obs, std_factor=1):
 
         if isinstance(obs, list):
-            obs = self.rnn_reader.obs_rnn_list(obs) 
+            obs = self.rnn_reader.obs_rnn_list(obs)
+            # m = nn.Dropout(p=self.drop_p)
+            # obs = m(obs)
             net_out = self.net_out(obs)
         else:
             obs = self.rnn_reader.obs_rnn(obs)
+            # m = nn.Dropout(p=self.drop_p)
+            # obs = m(obs)
             net_out = self.net_out(obs)
         
-        mu = net_out  
-    
+        # mu = 1.5 * net_out  
+        mu = net_out 
+
         std = torch.exp(self.log_std)
         std = std_factor * std
         # std = torch.clamp(std, 0, 0.3)
+        # if self.log_std[0] != -2:
+        #     print(self.log_std)
 
         return Normal(mu, std)
         

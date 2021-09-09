@@ -1,5 +1,5 @@
 <launch>
-    <arg name="world_file" default="$(find master_simulation)/gazebo/worlds/empty.world" />
+    <arg name="world_file" default="$(find master_simulation)/gazebo/worlds/frame4.world" />
     <arg name="base" value="$(optenv TURTLEBOT_BASE kobuki)" /> <!-- create, roomba -->
     <arg name="battery" value="$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)" /> <!-- /proc/acpi/battery/BAT0 -->
     <arg name="paused" value="true" />
@@ -10,14 +10,14 @@
     <!-- <arg name="ROBOT_INITIAL_POSE0" value="-x 0.5 -y 0.5" /> -->
 
     <arg name="ROBOT_INITIAL_POSE1" value="-x 1 -y 1 " />
-    <arg name="ROBOT_INITIAL_POSE2" value="-x 3 -y 1 " />
-    <arg name="ROBOT_INITIAL_POSE3" value="-x 5 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE2" value="-x 2 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE3" value="-x 3 -y 1 " />
     <arg name="ROBOT_INITIAL_POSE4" value="-x 1 -y 5 " />
-    <arg name="ROBOT_INITIAL_POSE5" value="-x 3 -y 5 " />
-    <arg name="ROBOT_INITIAL_POSE6" value="-x 5 -y 5 " />
-    <arg name="ROBOT_INITIAL_POSE7" value="-x 1 -y 3 " />
-    <arg name="ROBOT_INITIAL_POSE8" value="-x 5 -y 3 " />
-    <arg name="ROBOT_INITIAL_POSE9" value="-x 9 -y 1 " />
+    <arg name="ROBOT_INITIAL_POSE5" value="-x 2 -y 5 " />
+    <arg name="ROBOT_INITIAL_POSE6" value="-x 3 -y 5 " />
+    <arg name="ROBOT_INITIAL_POSE7" value="-x 1 -y 4 " />
+    <arg name="ROBOT_INITIAL_POSE8" value="-x 2 -y 4 " />
+    <arg name="ROBOT_INITIAL_POSE9" value="-x 3 -y 4 " />
     <arg name="ROBOT_INITIAL_POSE10" value="-x 10 -y 1 " />
 
     <arg name="robot1" value="agent1" />
